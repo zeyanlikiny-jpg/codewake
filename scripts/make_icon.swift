@@ -1,93 +1,91 @@
 #!/usr/bin/env swift
-// Generates a 1024x1024 app icon PNG for Lidless using CoreGraphics (headless-safe,
-// no window server needed). The mark is an open eye — "Lidless" = the lid that
-// never closes. Run: swift scripts/make_icon.swift Resources/icon_1024.png
-import Foundation
+// Renders the CodeWake app icon with the approved B laptop-and->_ mark.
+// CoreGraphics keeps the source artwork reproducible without a window server.
+// Run: swift scripts/make_icon.swift Resources/icon_1024.png
 import CoreGraphics
+import Foundation
 import ImageIO
 import UniformTypeIdentifiers
 
 let size = 1024
-let out = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "icon_1024.png"
-
-guard let ctx = CGContext(
+let output = CommandLine.arguments.count > 1
+    ? CommandLine.arguments[1] : "Resources/icon_1024.png"
+let colorSpace = CGColorSpace(name: CGColorSpace.sRGB)!
+guard let context = CGContext(
     data: nil, width: size, height: size, bitsPerComponent: 8, bytesPerRow: 0,
-    space: CGColorSpaceCreateDeviceRGB(),
+    space: colorSpace,
     bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-) else { fatalError("ctx") }
+) else { fatalError("Could not create app-icon context.") }
 
-let s = CGFloat(size)
-func rgb(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat, _ a: CGFloat = 1) -> CGColor {
-    CGColor(red: r/255, green: g/255, blue: b/255, alpha: a)
+func rgb(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> CGColor {
+    CGColor(colorSpace: colorSpace, components: [r / 255, g / 255, b / 255, 1])!
 }
 
-// Rounded-rect background with a vertical gradient (deep indigo -> near black).
-let inset: CGFloat = s * 0.06
-let rect = CGRect(x: inset, y: inset, width: s - inset*2, height: s - inset*2)
-let radius = (s - inset*2) * 0.235
-let bgPath = CGPath(roundedRect: rect, cornerWidth: radius, cornerHeight: radius, transform: nil)
-ctx.addPath(bgPath)
-ctx.clip()
-let cs = CGColorSpaceCreateDeviceRGB()
-let grad = CGGradient(colorsSpace: cs,
-                      colors: [rgb(40, 52, 110), rgb(14, 16, 34)] as CFArray,
-                      locations: [0, 1])!
-ctx.drawLinearGradient(grad, start: CGPoint(x: 0, y: s), end: CGPoint(x: 0, y: 0), options: [])
+context.setAllowsAntialiasing(true)
+context.setShouldAntialias(true)
+let background = CGRect(x: 61, y: 61, width: 902, height: 902)
+let outline = CGPath(
+    roundedRect: background, cornerWidth: 213, cornerHeight: 213,
+    transform: nil
+)
+context.saveGState()
+context.addPath(outline)
+context.clip()
+let gradient = CGGradient(
+    colorsSpace: colorSpace,
+    colors: [rgb(65, 74, 157), rgb(31, 30, 72), rgb(70, 30, 183)] as CFArray,
+    locations: [0, 0.64, 1]
+)!
+context.drawLinearGradient(
+    gradient, start: CGPoint(x: 512, y: 963), end: CGPoint(x: 512, y: 61),
+    options: []
+)
+context.restoreGState()
+context.addPath(outline)
+context.setStrokeColor(rgb(103, 105, 175))
+context.setLineWidth(5)
+context.strokePath()
 
-let cx = s/2, cy = s/2
+// Same 18-point geometry as the approved menu-bar laptop, scaled into the tile.
+context.saveGState()
+context.translateBy(x: 152, y: 152)
+context.scaleBy(x: 40, y: 40)
+context.setFillColor(rgb(248, 249, 255))
+context.setStrokeColor(rgb(248, 249, 255))
+let screen = CGMutablePath()
+screen.addRoundedRect(
+    in: CGRect(x: 2, y: 4.05, width: 14, height: 11.85),
+    cornerWidth: 2.8, cornerHeight: 2.8
+)
+screen.addRoundedRect(
+    in: CGRect(x: 3.35, y: 5.4, width: 11.3, height: 9.15),
+    cornerWidth: 1.45, cornerHeight: 1.45
+)
+context.addPath(screen)
+context.fillPath(using: .evenOdd)
+context.addPath(CGPath(
+    roundedRect: CGRect(x: 1, y: 1.5, width: 16, height: 1.55),
+    cornerWidth: 0.775, cornerHeight: 0.775, transform: nil
+))
+context.fillPath()
+let terminal = CGMutablePath()
+terminal.move(to: CGPoint(x: 5.55, y: 12.05))
+terminal.addLine(to: CGPoint(x: 7.65, y: 10.05))
+terminal.addLine(to: CGPoint(x: 5.55, y: 8.05))
+terminal.move(to: CGPoint(x: 9.65, y: 8.05))
+terminal.addLine(to: CGPoint(x: 12.15, y: 8.05))
+context.setLineWidth(1.5)
+context.setLineCap(.round)
+context.setLineJoin(.round)
+context.addPath(terminal)
+context.strokePath()
+context.restoreGState()
 
-// Almond eye outline (two symmetric quadratic curves).
-let halfW = s * 0.30
-let halfH = s * 0.175
-let eye = CGMutablePath()
-eye.move(to: CGPoint(x: cx - halfW, y: cy))
-eye.addQuadCurve(to: CGPoint(x: cx + halfW, y: cy), control: CGPoint(x: cx, y: cy + halfH*1.9))
-eye.addQuadCurve(to: CGPoint(x: cx - halfW, y: cy), control: CGPoint(x: cx, y: cy - halfH*1.9))
-eye.closeSubpath()
-
-// White of the eye.
-ctx.addPath(eye)
-ctx.setFillColor(rgb(244, 247, 255))
-ctx.fillPath()
-
-// Iris (radial cyan -> blue), clipped to the eye shape.
-ctx.saveGState()
-ctx.addPath(eye)
-ctx.clip()
-let irisR = s * 0.135
-let iris = CGGradient(colorsSpace: cs,
-                      colors: [rgb(90, 220, 255), rgb(40, 120, 230)] as CFArray,
-                      locations: [0, 1])!
-ctx.drawRadialGradient(iris,
-                       startCenter: CGPoint(x: cx, y: cy), startRadius: 0,
-                       endCenter: CGPoint(x: cx, y: cy), endRadius: irisR,
-                       options: [.drawsAfterEndLocation])
-// keep only the iris disc
-ctx.restoreGState()
-ctx.saveGState()
-ctx.addEllipse(in: CGRect(x: cx - irisR, y: cy - irisR, width: irisR*2, height: irisR*2))
-ctx.clip()
-ctx.drawRadialGradient(iris,
-                       startCenter: CGPoint(x: cx, y: cy), startRadius: 0,
-                       endCenter: CGPoint(x: cx, y: cy), endRadius: irisR,
-                       options: [])
-ctx.restoreGState()
-
-// Pupil + highlight.
-let pupilR = s * 0.062
-ctx.setFillColor(rgb(10, 14, 30))
-ctx.fillEllipse(in: CGRect(x: cx - pupilR, y: cy - pupilR, width: pupilR*2, height: pupilR*2))
-let hl = s * 0.022
-ctx.setFillColor(rgb(255, 255, 255, 0.9))
-ctx.fillEllipse(in: CGRect(x: cx + pupilR*0.2, y: cy + pupilR*0.25, width: hl*2, height: hl*2))
-
-guard let img = ctx.makeImage() else { fatalError("img") }
-let url = URL(fileURLWithPath: out)
-guard let dest = CGImageDestinationCreateWithURL(url as CFURL, UTType.png.identifier as CFString, 1, nil)
-else { fatalError("dest") }
-CGImageDestinationAddImage(dest, img, nil)
-if CGImageDestinationFinalize(dest) {
-    print("wrote \(out)")
-} else {
-    fatalError("write failed")
-}
+guard let image = context.makeImage() else { fatalError("Could not render app icon.") }
+let destinationURL = URL(fileURLWithPath: output)
+guard let destination = CGImageDestinationCreateWithURL(
+    destinationURL as CFURL, UTType.png.identifier as CFString, 1, nil
+) else { fatalError("Could not create app-icon PNG.") }
+CGImageDestinationAddImage(destination, image, nil)
+guard CGImageDestinationFinalize(destination) else { fatalError("Could not write app-icon PNG.") }
+print("wrote \(output)")

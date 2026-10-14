@@ -40,7 +40,7 @@ final class HelperIdentityTests: XCTestCase {
     func testBuildUpgradeRequiresExactCurrentHelperAdvertisement() {
         XCTAssertEqual(
             LidlessHelper.currentVersionAdvertisement,
-            "0.2.17+22;protocol=2"
+            "0.2.18+23;protocol=2"
         )
         XCTAssertTrue(LidlessHelper.isCurrentVersionAdvertisement(
             LidlessHelper.currentVersionAdvertisement

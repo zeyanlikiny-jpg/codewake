@@ -48,17 +48,14 @@ final class LocalizationTests: XCTestCase {
         )
     }
 
-    func testProductBrandUsesLocalizedNamesAndPreservesUpstreamAttribution() {
+    func testProductBrandAndProjectLinkUseLocalizedNames() {
         let pairs: [(String, String)] = [
             ("CodeWake", "CodeWake · 醒码"),
             ("Quit CodeWake", "退出 CodeWake · 醒码"),
             ("Welcome to CodeWake", "欢迎使用 CodeWake · 醒码"),
             ("Launch CodeWake at login", "登录时启动 CodeWake · 醒码"),
-            (
-                "Based on Lidless by Nghia Luong (MIT)",
-                "基于 Nghia Luong 的 Lidless（MIT）"
-            ),
-            ("View the original Lidless project", "查看原始 Lidless 项目")
+            ("Author: LKenny", "作者：LKenny"),
+            ("View the CodeWake project", "查看 CodeWake 项目")
         ]
 
         for (english, chinese) in pairs {

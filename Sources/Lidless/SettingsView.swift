@@ -9,7 +9,7 @@ struct SettingsView: View {
     static let preferredSize = CGSize(width: 500, height: 760)
 
     @EnvironmentObject var state: AppState
-    private let upstreamURL = URL(string: "https://github.com/nghialuong/Lidless")!
+    private let projectURL = URL(string: "https://github.com/zeyanlikiny-jpg/codewake")!
 
     var body: some View {
         Form {
@@ -220,12 +220,12 @@ struct SettingsView: View {
                         Text("Version \(state.appVersion)")
                             .font(.callout)
                             .foregroundStyle(.secondary)
-                        Text("Based on Lidless by Nghia Luong (MIT)")
+                        Text("Author: LKenny")
                             .font(.callout)
                             .foregroundStyle(.secondary)
                     }
                 }
-                Link("View the original Lidless project", destination: upstreamURL)
+                Link("View the CodeWake project", destination: projectURL)
                 Text("This local development build has no automatic update feed. A CodeWake update channel will require its own signed and notarized releases.")
                     .font(.callout)
                     .foregroundStyle(.secondary)

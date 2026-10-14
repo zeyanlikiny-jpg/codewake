@@ -181,6 +181,13 @@ Helper acceptance, and the optional notarized DMG workflow.
 
 ## Menu-bar assets
 
+The application icon uses the same laptop-and-`>_` mark on an indigo/purple
+tile. Regenerate its 1024-pixel master and all ten macOS AppIcon sizes with:
+
+```bash
+bash scripts/make_iconset.sh
+```
+
 The menu-bar artwork uses the approved laptop-and-`>_` design. Its four variants
 are committed under `Resources/Assets.xcassets/`: `MenubarLaptop`,
 `MenubarLaptopActive`, `MenubarLaptopWorking`, and `MenubarLaptopAttention`.

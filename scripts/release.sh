@@ -61,8 +61,8 @@ test -d "$APP" || {
 }
 codesign --verify --deep --strict --verbose=2 "$APP"
 
-EXPECTED_VERSION="0.2.17"
-EXPECTED_BUILD_NUMBER="22"
+EXPECTED_VERSION="0.2.18"
+EXPECTED_BUILD_NUMBER="23"
 EXPECTED_ARCHITECTURES="arm64 x86_64"
 APP_EXECUTABLE="$APP/Contents/MacOS/$APP_NAME"
 HELPER="$APP/Contents/MacOS/LidlessHelper"

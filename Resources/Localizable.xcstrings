@@ -977,6 +977,22 @@
         }
       }
     },
+    "Author: LKenny": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Author: LKenny"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "作者：LKenny"
+          }
+        }
+      }
+    },
     "Active": {
       "localizations": {
         "en": {
@@ -1437,22 +1453,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "后台辅助程序修复已成功恢复。"
-          }
-        }
-      }
-    },
-    "Based on Lidless by Nghia Luong (MIT)": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Based on Lidless by Nghia Luong (MIT)"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "基于 Nghia Luong 的 Lidless（MIT）"
           }
         }
       }
@@ -4369,18 +4369,18 @@
         }
       }
     },
-    "View the original Lidless project": {
+    "View the CodeWake project": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "View the original Lidless project"
+            "value": "View the CodeWake project"
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "查看原始 Lidless 项目"
+            "value": "查看 CodeWake 项目"
           }
         }
       }

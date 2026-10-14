@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build the AppIcon.appiconset from a single 1024px master.
-# Regenerates icon art then emits all macOS icon sizes + Contents.json.
+# Regenerates icon art then emits all sizes using the existing macOS catalog.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -15,29 +15,9 @@ emit() { # size filename
   sips -z "$1" "$1" "$MASTER" --out "$SET/$2" >/dev/null
 }
 echo "→ emitting sizes"
-emit 16  icon_16.png
-emit 32  icon_32.png
-emit 64  icon_64.png
-emit 128 icon_128.png
-emit 256 icon_256.png
-emit 512 icon_512.png
-cp "$MASTER" "$SET/icon_1024.png"
-
-cat > "$SET/Contents.json" <<'JSON'
-{
-  "images" : [
-    { "idiom" : "mac", "scale" : "1x", "size" : "16x16",   "filename" : "icon_16.png" },
-    { "idiom" : "mac", "scale" : "2x", "size" : "16x16",   "filename" : "icon_32.png" },
-    { "idiom" : "mac", "scale" : "1x", "size" : "32x32",   "filename" : "icon_32.png" },
-    { "idiom" : "mac", "scale" : "2x", "size" : "32x32",   "filename" : "icon_64.png" },
-    { "idiom" : "mac", "scale" : "1x", "size" : "128x128", "filename" : "icon_128.png" },
-    { "idiom" : "mac", "scale" : "2x", "size" : "128x128", "filename" : "icon_256.png" },
-    { "idiom" : "mac", "scale" : "1x", "size" : "256x256", "filename" : "icon_256.png" },
-    { "idiom" : "mac", "scale" : "2x", "size" : "256x256", "filename" : "icon_512.png" },
-    { "idiom" : "mac", "scale" : "1x", "size" : "512x512", "filename" : "icon_512.png" },
-    { "idiom" : "mac", "scale" : "2x", "size" : "512x512", "filename" : "icon_1024.png" }
-  ],
-  "info" : { "author" : "xcode", "version" : 1 }
-}
-JSON
+# Keep every shipped catalog filename stable when replacing the app artwork.
+for size in 16 32 128 256 512; do
+  emit "$size" "icon_${size}@1x.png"
+  emit "$((size * 2))" "icon_${size}@2x.png"
+done
 echo "✓ AppIcon.appiconset ready"

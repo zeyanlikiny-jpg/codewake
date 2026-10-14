@@ -6,7 +6,7 @@ import Foundation
 /// two anonymous pipes and launches one watchdog for one blackout generation.
 public enum DisplayBlackoutProtocol {
     public static let currentVersion = 1
-    public static let currentVersionAdvertisement = "0.2.17+22;protocol=1"
+    public static let currentVersionAdvertisement = "0.2.18+23;protocol=1"
     public static let maximumPayloadBytes = 4 * 1024
     public static let frameHeaderBytes = MemoryLayout<UInt32>.size
     public static let maximumTokenBytes = 128

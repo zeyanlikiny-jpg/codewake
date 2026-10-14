@@ -28,7 +28,7 @@ public enum LidlessHelper {
     /// a daemon from the previous app build alive, even when the XPC protocol
     /// itself has not changed, so a protocol-only match is not proof that the
     /// embedded helper was upgraded.
-    public static let currentVersionAdvertisement = "0.2.17+22;protocol=2"
+    public static let currentVersionAdvertisement = "0.2.18+23;protocol=2"
 
     /// A build may be recorded as having the current embedded helper only after
     /// the running daemon returns this exact advertisement. Reachability or a
