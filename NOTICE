@@ -1,0 +1,21 @@
+CodeWake · 醒码
+https://github.com/zeyanlikiny-jpg/codewake
+
+This project is a fork and derivative work of Lidless:
+https://github.com/nghialuong/Lidless
+
+Original work copyright (c) 2026 Nghia Luong.
+CodeWake modifications copyright (c) 2026 Kenny.
+Licensed under the MIT License; see LICENSE for the complete terms.
+
+CodeWake modifications include AI-agent lifecycle monitoring, automatic
+wake-lease management, privacy-minimized local hook integration, product and
+signing isolation, display sleep and brightness recovery, status-aware menu-bar
+icons, Chinese/English presentation, and removal of the upstream automatic-update
+channel.
+
+CodeWake is an independent fork and is not affiliated with or endorsed by
+the original author, OpenAI, Anthropic, or Apple.
+
+Legacy Lidless AI bundle identifiers, embedded tool names, and local hooks/data
+paths are retained solely for upgrade compatibility.

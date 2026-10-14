@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  # Scoped to main so a branch that already has a pull request doesn't build
+  # twice for the same commit — once for the push, once for the PR.
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: brew install xcodegen xcbeautify
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build & test
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project 'CodeWake.xcodeproj' \
+            -scheme CodeWake-CI \
+            -destination 'platform=macOS' \
+            CODE_SIGNING_ALLOWED=NO \
+            LIDLESS_DEVELOPMENT_TEAM= \
+            | xcbeautify

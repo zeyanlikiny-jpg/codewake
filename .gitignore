@@ -1,0 +1,52 @@
+# Generated Xcode project (source of truth is project.yml — run `xcodegen generate`)
+*.xcodeproj
+
+# Build output
+build/
+DerivedData/
+.build/
+
+# Xcode user state
+xcuserdata/
+*.xcuserstate
+
+# macOS
+.DS_Store
+
+# SwiftPM
+.swiftpm/
+
+# ─── Secrets & signing material — MUST NEVER be committed / made public ───
+# The Apple notary credential is stored in the keychain, never on disk.
+# These patterns are a defense-in-depth net for accidental key exports
+# or stray credentials.
+*.pem
+*private*key*
+*PrivateKey*
+dsa_priv*
+# Apple signing assets (certs / profiles)
+*.p12
+*.cer
+*.cert
+*.mobileprovision
+*.provisionprofile
+# Env / credential dumps
+.env
+.env.*
+*.netrc
+
+# Local distribution and verification output (source-only publication)
+*.app/
+*.xcarchive/
+*.dmg
+*.pkg
+*.ipa
+*.xcresult/
+*.log
+
+# Local signing configuration and exported private credentials
+*.local.xcconfig
+AuthKey_*.p8
+*.key
+*.keychain
+*.keychain-db

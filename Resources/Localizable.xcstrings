@@ -1,0 +1,5620 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Double-click to turn off the built-in display." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-click to turn off the built-in display."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速双击可执行内屏熄灭。"
+          }
+        }
+      }
+    },
+    "The built-in display is not ready. Open the lid and wait for brightness to recover, then try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The built-in display is not ready. Open the lid and wait for brightness to recover, then try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内置屏幕尚未就绪。请打开上盖，等待亮度恢复后重试。"
+          }
+        }
+      }
+    },
+    "Built-in brightness recovery failed. Raise the built-in display brightness and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in brightness recovery failed. Raise the built-in display brightness and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内屏亮度恢复失败。请调高内置屏幕亮度后重试。"
+          }
+        }
+      }
+    },
+    "Couldn’t confirm the lid or display state. Wait for the displays to reconnect and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t confirm the lid or display state. Wait for the displays to reconnect and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认上盖或显示器状态。请等待显示器重新连接后重试。"
+          }
+        }
+      }
+    },
+    "The saved brightness recovery record could not be verified. It has been preserved; display sleep was not requested.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The saved brightness recovery record could not be verified. It has been preserved; display sleep was not requested."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法验证保存的亮度恢复记录。记录已保留，未发起熄屏请求。"
+          }
+        }
+      }
+    },
+    "The brightness recovery process is unavailable. Open the lid to restore brightness before trying again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The brightness recovery process is unavailable. Open the lid to restore brightness before trying again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "亮度恢复程序暂不可用。请打开上盖恢复亮度后重试。"
+          }
+        }
+      }
+    },
+    "Built-in display recovery encountered an error. The recovery record has been preserved.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in display recovery encountered an error. The recovery record has been preserved."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内置屏幕恢复出错，恢复记录已保留。"
+          }
+        }
+      }
+    },
+    "Built-in display recovery is taking too long. Wait for brightness to recover and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in display recovery is taking too long. Wait for brightness to recover and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内屏亮度恢复用时过长。请等待亮度恢复后重试。"
+          }
+        }
+      }
+    },
+    "The lid is closed. Built-in brightness will recover when opened; external displays can still be turned off.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The lid is closed. Built-in brightness will recover when opened; external displays can still be turned off."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内屏已合盖，开盖后自动恢复亮度；仍可熄灭外接屏幕。"
+          }
+        }
+      }
+    },
+    "Built-in display brightness recovery is pending.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in display brightness recovery is pending."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内屏亮度等待恢复。"
+          }
+        }
+      }
+    },
+    "All displays": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All displays"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部屏幕"
+          }
+        }
+      }
+    },
+    "Turn Off All Displays": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn Off All Displays"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部熄屏"
+          }
+        }
+      }
+    },
+    "Turning Off Displays…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turning Off Displays…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在熄屏…"
+          }
+        }
+      }
+    },
+    "Turns off the built-in and all external displays after 1.5 seconds. Move the mouse or press a key to restore the displays. The Mac keeps its current keep-awake rules.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turns off the built-in and all external displays after 1.5 seconds. Move the mouse or press a key to restore the displays. The Mac keeps its current keep-awake rules."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1.5 秒后熄灭内置和所有外接屏幕。移动鼠标或按键恢复显示，电脑沿用现有防睡眠规则。"
+          }
+        }
+      }
+    },
+    "Couldn’t restore the built-in display before turning off all displays.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t restore the built-in display before turning off all displays."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法先恢复内置屏幕，因此未能熄灭全部屏幕。"
+          }
+        }
+      }
+    },
+    "Couldn’t start the display sleep request.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t start the display sleep request."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法发起屏幕熄灭请求。"
+          }
+        }
+      }
+    },
+    "macOS couldn’t turn off all displays.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS couldn’t turn off all displays."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS 无法熄灭全部屏幕。"
+          }
+        }
+      }
+    },
+    "The display sleep request timed out.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The display sleep request timed out."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "屏幕熄灭请求超时。"
+          }
+        }
+      }
+    },
+    "macOS didn’t confirm that all displays turned off.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS didn’t confirm that all displays turned off."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS 未能确认全部屏幕已熄灭。"
+          }
+        }
+      }
+    },
+    "audio.input.choice.unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ (Unavailable)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（不可用）"
+          }
+        }
+      }
+    },
+    "audio.input.current.accessibility": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current system input: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前系统输入：%@"
+          }
+        }
+      }
+    },
+    "audio.input.switch.accessibility": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch system input to %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将系统输入切换到 %@"
+          }
+        }
+      }
+    },
+    "audio.input.switch.button": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switch to %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "切换到 %@"
+          }
+        }
+      }
+    },
+    "audio.input.switch.reconnecting": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting for %@ to reconnect…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待 %@ 重新连接…"
+          }
+        }
+      }
+    },
+    "audio.input.switch.unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ unavailable"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 不可用"
+          }
+        }
+      }
+    },
+    "Changes the macOS default input. Apps pinned to another microphone may not follow it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Changes the macOS default input. Apps pinned to another microphone may not follow it."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更改 macOS 默认输入。已固定使用其他麦克风的应用可能不会跟随切换。"
+          }
+        }
+      }
+    },
+    "Connection unstable — switching paused": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connection unstable — switching paused"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接不稳定，已暂停切换"
+          }
+        }
+      }
+    },
+    "Couldn’t confirm microphone status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t confirm microphone status"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认麦克风状态"
+          }
+        }
+      }
+    },
+    "Couldn’t confirm whether the current microphone is in use. Switching is paused for safety.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t confirm whether the current microphone is in use. Switching is paused for safety."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认当前麦克风是否正在使用，已为安全起见暂停切换。"
+          }
+        }
+      }
+    },
+    "Input devices changed. Please try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input devices changed. Please try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入设备已变化，请重试。"
+          }
+        }
+      }
+    },
+    "Microphone in use": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Microphone in use"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "麦克风正在使用"
+          }
+        }
+      }
+    },
+    "Please wait…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please wait…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请稍候…"
+          }
+        }
+      }
+    },
+    "The input device is reconnecting. Switching will be available when it is stable.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The input device is reconnecting. Switching will be available when it is stable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入设备正在重新连接，稳定后才能切换。"
+          }
+        }
+      }
+    },
+    "The microphone is being used by another app. Stop recording before switching.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The microphone is being used by another app. Stop recording before switching."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "麦克风正在被其他应用使用，请停止录音后再切换。"
+          }
+        }
+      }
+    },
+    "The target input became unavailable before switching.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The target input became unavailable before switching."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目标输入设备在切换前变为不可用。"
+          }
+        }
+      }
+    },
+    "The target input is unstable. Try again when it is ready.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The target input is unstable. Try again when it is ready."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "目标输入设备状态不稳定，请在就绪后重试。"
+          }
+        }
+      }
+    },
+    "This input device has disconnected repeatedly. Switching will resume automatically when the connection is stable.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This input device has disconnected repeatedly. Switching will resume automatically when the connection is stable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "该输入设备近期反复断开，连接稳定后会自动恢复。"
+          }
+        }
+      }
+    },
+    "Choose a different device for each slot. Unavailable inputs stay saved until they reconnect.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a different device for each slot. Unavailable inputs stay saved until they reconnect."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请为每个位置选择不同的设备。不可用的输入会保留，重新连接后即可使用。"
+          }
+        }
+      }
+    },
+    "Choose an input…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose an input…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择输入设备…"
+          }
+        }
+      }
+    },
+    "Choose two different input devices. Offline selections stay saved and become available again when reconnected.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose two different input devices. Offline selections stay saved and become available again when reconnected."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请选择两个不同的输入设备。离线选择会保留，并在重新连接后恢复可用。"
+          }
+        }
+      }
+    },
+    "Configure Input Switching…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configure Input Switching…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配置输入切换…"
+          }
+        }
+      }
+    },
+    "Couldn’t monitor system input changes. CodeWake will refresh before switching.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t monitor system input changes. CodeWake will refresh before switching."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法实时监控系统输入变化。CodeWake · 醒码 会在切换前刷新。"
+          }
+        }
+      }
+    },
+    "Couldn’t read the available system input devices.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t read the available system input devices."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取可用的系统输入设备。"
+          }
+        }
+      }
+    },
+    "Couldn’t switch the system input device.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t switch the system input device."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法切换系统输入设备。"
+          }
+        }
+      }
+    },
+    "Current system input": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Current system input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前系统输入"
+          }
+        }
+      }
+    },
+    "Input A": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input A"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入 A"
+          }
+        }
+      }
+    },
+    "Input B": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input B"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入 B"
+          }
+        }
+      }
+    },
+    "Input switching": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input switching"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入切换"
+          }
+        }
+      }
+    },
+    "CodeWake changes only the macOS default input. Apps that use a fixed microphone may not follow it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake changes only the macOS default input. Apps that use a fixed microphone may not follow it."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码 只更改 macOS 默认输入。使用固定麦克风的应用可能不会跟随切换。"
+          }
+        }
+      }
+    },
+    "Microphone input": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Microphone input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "麦克风输入"
+          }
+        }
+      }
+    },
+    "No system input": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No system input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无系统输入设备"
+          }
+        }
+      }
+    },
+    "macOS didn’t confirm the system input change.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS didn’t confirm the system input change."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "macOS 未能确认系统输入更改。"
+          }
+        }
+      }
+    },
+    "Switching input…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Switching input…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在切换输入…"
+          }
+        }
+      }
+    },
+    "The selected input device is no longer available.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The selected input device is no longer available."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所选输入设备已不可用。"
+          }
+        }
+      }
+    },
+    "“Only while charging” is on, so connect your Mac to power to keep it awake.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“Only while charging” is on, so connect your Mac to power to keep it awake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“仅在充电时”已开启，请将 Mac 接通电源以保持唤醒。"
+          }
+        }
+      }
+    },
+    "30% Taller": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "30% Taller"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "加长 30%"
+          }
+        }
+      }
+    },
+    "100%": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "100%"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "100%"
+          }
+        }
+      }
+    },
+    "A different or malformed CodeWake notify relay already exists. No changes were made.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A different or malformed CodeWake notify relay already exists. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已存在其他或格式错误的 CodeWake · 醒码 通知中继，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "A durable lease and watchdog restore the sleep setting after an app/helper failure or missed heartbeat.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A durable lease and watchdog restore the sleep setting after an app/helper failure or missed heartbeat."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "持久租约和看门狗会在应用或辅助程序故障、心跳丢失后恢复睡眠设置。"
+          }
+        }
+      }
+    },
+    "A manual, timed, or charging hold remains in control after AI work finishes. Leave the main manual switch off when you want AI completion to put a closed Mac to sleep.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A manual, timed, or charging hold remains in control after AI work finishes. Leave the main manual switch off when you want AI completion to put a closed Mac to sleep."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 工作结束后，手动、计时或充电保持仍具有优先权。如果希望 AI 完成后让合盖的 Mac 进入睡眠，请关闭主手动开关。"
+          }
+        }
+      }
+    },
+    "About": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "About"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关于"
+          }
+        }
+      }
+    },
+    "Active": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Active"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "运行中"
+          }
+        }
+      }
+    },
+    "After installation, approve the fixed CodeWake command in `/hooks`, then run one real turn in both Codex Desktop and Codex CLI. Claude Code uses its normal settings trust flow. Configuration alone is not shown as runtime verification.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After installation, approve the fixed CodeWake command in `/hooks`, then run one real turn in both Codex Desktop and Codex CLI. Claude Code uses its normal settings trust flow. Configuration alone is not shown as runtime verification."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装后，请在 `/hooks` 中批准固定的 CodeWake · 醒码 命令，然后分别在 Codex Desktop 和 Codex CLI 中实际运行一轮。Claude Code 使用其常规设置授权流程。仅完成配置不会显示为已通过运行验证。"
+          }
+        }
+      }
+    },
+    "After the final successful AI turn, it confirms completion for five seconds and sleeps a closed Mac when no manual hold remains.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "After the final successful AI turn, it confirms completion for five seconds and sleeps a closed Mac when no manual hold remains."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最后一轮 AI 成功完成后，会确认五秒；若没有手动保持，则让合盖的 Mac 进入睡眠。"
+          }
+        }
+      }
+    },
+    "Agent discovered": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Agent discovered"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已检测到智能体"
+          }
+        }
+      }
+    },
+    "AI agents": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI agents"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 智能体"
+          }
+        }
+      }
+    },
+    "AI integrations installed. Restart Codex after this task so it loads the completion relay, then run one real turn in each supported surface.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI integrations installed. Restart Codex after this task so it loads the completion relay, then run one real turn in each supported surface."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 集成已安装。请在当前任务结束后重启 Codex 以加载完成中继，然后在每个受支持的界面中实际运行一轮。"
+          }
+        }
+      }
+    },
+    "Allow AI automation on battery": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow AI automation on battery"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "允许 AI 自动化使用电池运行"
+          }
+        }
+      }
+    },
+    "another wake setting remains": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "another wake setting remains"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他唤醒设置仍在生效"
+          }
+        }
+      }
+    },
+    "Approve CodeWake in System Settings ▸ Login Items before enabling keep-awake.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approve CodeWake in System Settings ▸ Login Items before enabling keep-awake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启用保持唤醒前，请在“系统设置”▸“登录项”中批准 CodeWake · 醒码。"
+          }
+        }
+      }
+    },
+    "Approve CodeWake in System Settings ▸ Login Items to finish repairing the background helper.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approve CodeWake in System Settings ▸ Login Items to finish repairing the background helper."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在“系统设置”▸“登录项”中批准 CodeWake · 醒码，以完成后台辅助程序修复。"
+          }
+        }
+      }
+    },
+    "Approve CodeWake in System Settings ▸ Login Items, then try the switch again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approve CodeWake in System Settings ▸ Login Items, then try the switch again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在“系统设置”▸“登录项”中批准 CodeWake · 醒码，然后再次尝试开关。"
+          }
+        }
+      }
+    },
+    "Approve CodeWake in System Settings ▸ Login Items.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approve CodeWake in System Settings ▸ Login Items."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在“系统设置”▸“登录项”中批准 CodeWake · 醒码。"
+          }
+        }
+      }
+    },
+    "Approve CodeWake under System Settings ▸ Login Items, then come back here.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approve CodeWake under System Settings ▸ Login Items, then come back here."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请在“系统设置”▸“登录项”中批准 CodeWake · 醒码，然后返回此处。"
+          }
+        }
+      }
+    },
+    "Auto-paused: not connected to power.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-paused: not connected to power."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已自动暂停：未接通电源。"
+          }
+        }
+      }
+    },
+    "Auto-paused: not on charger.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-paused: not on charger."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已自动暂停：未连接充电器。"
+          }
+        }
+      }
+    },
+    "Auto-paused: the Mac is running hot.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-paused: the Mac is running hot."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已自动暂停：Mac 温度过高。"
+          }
+        }
+      }
+    },
+    "Auto-pauses if the Mac runs hot or the battery runs low — so it stays safe unattended.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-pauses if the Mac runs hot or the battery runs low — so it stays safe unattended."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 温度过高或电量过低时自动暂停，确保无人看管时也安全。"
+          }
+        }
+      }
+    },
+    "Automatic": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动"
+          }
+        }
+      }
+    },
+    "Automatic mode is on, but keep-awake isn’t active right now.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatic mode is on, but keep-awake isn’t active right now."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动模式已开启，但当前未保持唤醒。"
+          }
+        }
+      }
+    },
+    "Automatically enable when charging": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatically enable when charging"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接通电源时自动启用"
+          }
+        }
+      }
+    },
+    "Automatically keep awake for AI work": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Automatically keep awake for AI work"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 工作时自动保持唤醒"
+          }
+        }
+      }
+    },
+    "Awaiting event": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Awaiting event"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待事件"
+          }
+        }
+      }
+    },
+    "Awaiting first event": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Awaiting first event"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待首次事件"
+          }
+        }
+      }
+    },
+    "Back": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "返回"
+          }
+        }
+      }
+    },
+    "Background helper": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background helper"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序"
+          }
+        }
+      }
+    },
+    "Background helper enabled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background helper enabled"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序已启用"
+          }
+        }
+      }
+    },
+    "Background helper installed and active.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background helper installed and active."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序已安装并运行。"
+          }
+        }
+      }
+    },
+    "Background helper reinstalled — try the switch again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background helper reinstalled — try the switch again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序已重新安装，请再次尝试开关。"
+          }
+        }
+      }
+    },
+    "Background helper repair resumed successfully.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background helper repair resumed successfully."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序修复已成功恢复。"
+          }
+        }
+      }
+    },
+    "Based on Lidless by Nghia Luong (MIT)": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Based on Lidless by Nghia Luong (MIT)"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "基于 Nghia Luong 的 Lidless（MIT）"
+          }
+        }
+      }
+    },
+    "Battery %lld percent": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery %lld percent"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "电池电量 %lld%%"
+          }
+        }
+      }
+    },
+    "Battery %lld percent, on power": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery %lld percent, on power"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "电池电量 %lld%%，已接通电源"
+          }
+        }
+      }
+    },
+    "Battery %lld%%": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery %lld%%"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "电池 %lld%%"
+          }
+        }
+      }
+    },
+    "Cancel": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cancel"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消"
+          }
+        }
+      }
+    },
+    "charging hold": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "charging hold"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "充电保持"
+          }
+        }
+      }
+    },
+    "Charging hold": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charging hold"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "充电保持"
+          }
+        }
+      }
+    },
+    "checking lid": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "checking lid"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在检查上盖状态"
+          }
+        }
+      }
+    },
+    "Claude Code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude Code"
+          }
+        }
+      }
+    },
+    "Codex": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex"
+          }
+        }
+      }
+    },
+    "Codex hooks + completion relay + Claude hooks installed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex hooks + completion relay + Claude hooks installed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已安装 Codex hooks、完成中继和 Claude hooks"
+          }
+        }
+      }
+    },
+    "Configuration": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configuration"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配置"
+          }
+        }
+      }
+    },
+    "Configuration needs manual repair": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Configuration needs manual repair"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配置需要手动修复"
+          }
+        }
+      }
+    },
+    "connect power": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "connect power"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请连接电源"
+          }
+        }
+      }
+    },
+    "Connect your coding agents": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect your coding agents"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接编码智能体"
+          }
+        }
+      }
+    },
+    "Connect your Mac to power to keep it awake.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Connect your Mac to power to keep it awake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请将 Mac 接通电源以保持唤醒。"
+          }
+        }
+      }
+    },
+    "Continue": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "继续"
+          }
+        }
+      }
+    },
+    "Couldn’t keep the screen on. Mac keep-awake remains active.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t keep the screen on. Mac keep-awake remains active."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保持屏幕常亮。Mac 保持唤醒仍然有效。"
+          }
+        }
+      }
+    },
+    "Couldn’t release the screen-on hold immediately. It will expire automatically.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t release the screen-on hold immediately. It will expire automatically."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法立即释放屏幕常亮，断言将在超时后自动失效。"
+          }
+        }
+      }
+    },
+    "Couldn’t confirm keep-awake with the system — it may not hold when you close the lid.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t confirm keep-awake with the system — it may not hold when you close the lid."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法向系统确认保持唤醒；合盖后可能无法继续保持。"
+          }
+        }
+      }
+    },
+    "Couldn’t confirm sleep was restored — your Mac may still stay awake.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t confirm sleep was restored — your Mac may still stay awake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认已恢复睡眠；Mac 可能仍会保持唤醒。"
+          }
+        }
+      }
+    },
+    "Couldn’t keep your Mac awake": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t keep your Mac awake"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法让 Mac 保持唤醒"
+          }
+        }
+      }
+    },
+    "Couldn’t persist the background-helper recovery marker; no registration was changed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t persist the background-helper recovery marker; no registration was changed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法保存后台辅助程序恢复标记；未更改任何注册。"
+          }
+        }
+      }
+    },
+    "Couldn’t turn keep-awake off": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t turn keep-awake off"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法关闭保持唤醒"
+          }
+        }
+      }
+    },
+    "Cursor": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cursor"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cursor"
+          }
+        }
+      }
+    },
+    "Done": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完成"
+          }
+        }
+      }
+    },
+    "Event bridge unavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Event bridge unavailable"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "事件桥接不可用"
+          }
+        }
+      }
+    },
+    "External/system": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External/system"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外部/系统"
+          }
+        }
+      }
+    },
+    "FAILED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FAILED"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "失败"
+          }
+        }
+      }
+    },
+    "FINISHED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FINISHED"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已完成"
+          }
+        }
+      }
+    },
+    "FINISHING": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FINISHING"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "即将完成"
+          }
+        }
+      }
+    },
+    "General": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "General"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "通用"
+          }
+        }
+      }
+    },
+    "helper required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "helper required"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要后台辅助程序"
+          }
+        }
+      }
+    },
+    "How it works": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "How it works"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作原理"
+          }
+        }
+      }
+    },
+    "input needed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "input needed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要输入"
+          }
+        }
+      }
+    },
+    "Install and approve the background helper before using keep-awake. It owns persistent system-sleep changes and restores the prior state after a crash or timeout.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install and approve the background helper before using keep-awake. It owns persistent system-sleep changes and restores the prior state after a crash or timeout."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用保持唤醒前，请安装并批准后台辅助程序。它负责持久的系统睡眠变更，并会在崩溃或超时后恢复之前的状态。"
+          }
+        }
+      }
+    },
+    "Install and approve the background helper before using keep-awake. It records ownership before changing macOS power state, so crashes and timeouts can recover safely.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install and approve the background helper before using keep-awake. It records ownership before changing macOS power state, so crashes and timeouts can recover safely."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用保持唤醒前，请安装并批准后台辅助程序。它会先记录所有权，再更改 macOS 电源状态，以便在崩溃或超时后安全恢复。"
+          }
+        }
+      }
+    },
+    "Install background helper…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install background helper…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装后台辅助程序…"
+          }
+        }
+      }
+    },
+    "Install integrations…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install integrations…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装集成…"
+          }
+        }
+      }
+    },
+    "Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, and Claude Code. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, and Claude Code. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装由 Codex Desktop、Codex CLI 和 Claude Code 共用的隐私最小化生命周期 hooks。它们仅发送不透明 ID/令牌、事件类型、后台工作数量和时间，绝不会发送提示词、回答、路径、命令或源代码。"
+          }
+        }
+      }
+    },
+    "Install the CodeWake background helper before enabling keep-awake.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install the CodeWake background helper before enabling keep-awake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启用保持唤醒前，请安装 CodeWake · 醒码 后台辅助程序。"
+          }
+        }
+      }
+    },
+    "Install the safety helper": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install the safety helper"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装安全辅助程序"
+          }
+        }
+      }
+    },
+    "Installed configuration and observed runtime events are separate. Each surface is verified only after its current bridge sends a real lifecycle event. The bridge sends only opaque IDs/tokens, event kind, background-work count, and time — never prompts, answers, commands, paths, or source code.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Installed configuration and observed runtime events are separate. Each surface is verified only after its current bridge sends a real lifecycle event. The bridge sends only opaque IDs/tokens, event kind, background-work count, and time — never prompts, answers, commands, paths, or source code."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已安装的配置与观察到的运行事件相互独立。只有当前桥接发送真实生命周期事件后，才会验证对应界面。桥接仅发送不透明 ID/令牌、事件类型、后台工作数量和时间，绝不会发送提示词、回答、命令、路径或源代码。"
+          }
+        }
+      }
+    },
+    "Built-in display": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in display"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内置屏幕"
+          }
+        }
+      }
+    },
+    "Built-in display brightness control is unavailable.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Built-in display brightness control is unavailable."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内置屏幕亮度控制不可用。"
+          }
+        }
+      }
+    },
+    "Display status could not be confirmed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Display status could not be confirmed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法确认显示器状态。"
+          }
+        }
+      }
+    },
+    "For 1.5 seconds after turn-off, pointer movement, dragging, and scrolling do not restore brightness. Click again or press a regular key to restore immediately; after that, any input restores brightness.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For 1.5 seconds after turn-off, pointer movement, dragging, and scrolling do not restore brightness. Click again or press a regular key to restore immediately; after that, any input restores brightness."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "熄屏后 1.5 秒内，移动、拖动和滚动不会恢复亮度。再次点击或按下普通按键会立即恢复；之后任意输入都会恢复亮度。"
+          }
+        }
+      }
+    },
+    "Restore Built-in Display": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore Built-in Display"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢复内屏"
+          }
+        }
+      }
+    },
+    "Sets only the built-in display brightness to zero. For 1.5 seconds after turn-off, pointer movement, dragging, and scrolling do not restore brightness. Click again or press a regular key to restore immediately; after that, any input restores brightness.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sets only the built-in display brightness to zero. For 1.5 seconds after turn-off, pointer movement, dragging, and scrolling do not restore brightness. Click again or press a regular key to restore immediately; after that, any input restores brightness."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅将内置屏幕亮度设为零。熄屏后 1.5 秒内，移动、拖动和滚动不会恢复亮度。再次点击或按下普通按键会立即恢复；之后任意输入都会恢复亮度。"
+          }
+        }
+      }
+    },
+    "The built-in display is offline. Brightness will be restored when it reconnects.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The built-in display is offline. Brightness will be restored when it reconnects."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内置屏幕已离线，重新上线后将恢复亮度。"
+          }
+        }
+      }
+    },
+    "Turn Off Built-in Display": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn Off Built-in Display"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内屏熄灭"
+          }
+        }
+      }
+    },
+    "Turn on keep-awake before turning off the built-in display.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn on keep-awake before turning off the built-in display."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请先开启防睡眠，再熄灭内屏。"
+          }
+        }
+      }
+    },
+    "Unavailable while an external display is connected.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unavailable while an external display is connected."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "连接外接显示器时不可用"
+          }
+        }
+      }
+    },
+    "Keep display awake": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep display awake"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保持屏幕常亮"
+          }
+        }
+      }
+    },
+    "Keep display awake during activity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep display awake during activity"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "活动期间保持屏幕常亮"
+          }
+        }
+      }
+    },
+    "Only prevents idle display sleep during active AI work or a manual or timed hold. Waiting, completion confirmation, and charging-only holds do not keep it on. It does not light a sleeping display or override lid-closed behavior.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only prevents idle display sleep during active AI work or a manual or timed hold. Waiting, completion confirmation, and charging-only holds do not keep it on. It does not light a sleeping display or override lid-closed behavior."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在 AI 正在工作、手动保持或计时保持期间防止显示器因闲置熄灭。等待输入、确认完成或仅充电保持时不会常亮。它不会点亮已熄灭的屏幕，也不会覆盖合盖行为。"
+          }
+        }
+      }
+    },
+    "Prevents idle display sleep only during active AI work or a manual or timed hold—not while waiting, confirming completion, or charging alone. It doesn’t light a sleeping display or override lid-closed behavior.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Prevents idle display sleep only during active AI work or a manual or timed hold—not while waiting, confirming completion, or charging alone. It doesn’t light a sleeping display or override lid-closed behavior."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在 AI 正在工作、手动保持或计时保持期间防止显示器因闲置熄灭；等待输入、确认完成或仅充电保持时不会常亮。它不会点亮已熄灭的屏幕，也不会覆盖合盖行为。"
+          }
+        }
+      }
+    },
+    "Keep your Mac awake — even with the lid closed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your Mac awake — even with the lid closed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "即使合上上盖，也让 Mac 保持唤醒。"
+          }
+        }
+      }
+    },
+    "Keep your Mac plugged in and ventilated under heavy use.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep your Mac plugged in and ventilated under heavy use."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "高负载使用时，请保持 Mac 接通电源并通风良好。"
+          }
+        }
+      }
+    },
+    "Keep-awake did not hold after a retry. CodeWake released its lease to avoid reporting unsafe protection.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keep-awake did not hold after a retry. CodeWake released its lease to avoid reporting unsafe protection."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重试后仍无法保持唤醒。CodeWake · 醒码 已释放租约，以免错误报告不安全的保护状态。"
+          }
+        }
+      }
+    },
+    "Keeps active AI coding work awake, then restores the Mac’s normal sleep policy when work finishes or an input wait expires.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keeps active AI coding work awake, then restores the Mac’s normal sleep policy when work finishes or an input wait expires."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 编码工作进行时让 Mac 保持唤醒，并在工作完成或等待输入超时后恢复正常睡眠策略。"
+          }
+        }
+      }
+    },
+    "Language": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "语言"
+          }
+        }
+      }
+    },
+    "Later": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "稍后"
+          }
+        }
+      }
+    },
+    "Launch at login": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Launch at login"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登录时启动"
+          }
+        }
+      }
+    },
+    "Launch CodeWake at login": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Launch CodeWake at login"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登录时启动 CodeWake · 醒码"
+          }
+        }
+      }
+    },
+    "Lease expiry must be finite.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lease expiry must be finite."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "租约到期时间必须是有限值。"
+          }
+        }
+      }
+    },
+    "Lease expiry must be in the future.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lease expiry must be in the future."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "租约到期时间必须晚于当前时间。"
+          }
+        }
+      }
+    },
+    "Lease ID is too long.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lease ID is too long."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "租约 ID 过长。"
+          }
+        }
+      }
+    },
+    "Lease ID must not be empty.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lease ID must not be empty."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "租约 ID 不能为空。"
+          }
+        }
+      }
+    },
+    "Let coding agents, downloads, or builds keep running while the closed Mac stays plugged in on a cool, ventilated desk. Never put it in a bag while keep-awake is active.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let coding agents, downloads, or builds keep running while the closed Mac stays plugged in on a cool, ventilated desk. Never put it in a bag while keep-awake is active."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将合盖的 Mac 接通电源并放在阴凉通风的桌面上，让编码智能体、下载或构建继续运行。保持唤醒时，切勿将 Mac 放入包中。"
+          }
+        }
+      }
+    },
+    "CodeWake": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码"
+          }
+        }
+      }
+    },
+    "CodeWake hooks and completion relay were removed; unrelated hooks and the prior notification command were preserved.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake hooks and completion relay were removed; unrelated hooks and the prior notification command were preserved."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已移除 CodeWake · 醒码 hooks 和完成中继；无关 hooks 及之前的通知命令均已保留。"
+          }
+        }
+      }
+    },
+    "CodeWake, Mac awake": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake, Mac awake"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码，Mac 保持唤醒"
+          }
+        }
+      }
+    },
+    "CodeWake, Mac awake, Codex waiting for input or confirming completion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake, Mac awake, Codex waiting for input or confirming completion"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码，Mac 保持唤醒，Codex 正在等待输入或确认完成"
+          }
+        }
+      }
+    },
+    "CodeWake, Mac awake, Codex working": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake, Mac awake, Codex working"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码，Mac 保持唤醒，Codex 正在工作"
+          }
+        }
+      }
+    },
+    "CodeWake, Mac awake, manual hold active": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake, Mac awake, manual hold active"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码，Mac 保持唤醒，手动保持已开启"
+          }
+        }
+      }
+    },
+    "CodeWake, Normal sleep": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake, Normal sleep"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码，正常睡眠"
+          }
+        }
+      }
+    },
+    "LidlessAIHookBridge is missing from the application bundle.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LidlessAIHookBridge is missing from the application bundle."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用包中缺少 LidlessAIHookBridge。"
+          }
+        }
+      }
+    },
+    "LIMIT REACHED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "LIMIT REACHED"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已达时限"
+          }
+        }
+      }
+    },
+    "Low-battery cutoff": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Low-battery cutoff"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "低电量阈值"
+          }
+        }
+      }
+    },
+    "Mac awake": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac awake"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 保持唤醒"
+          }
+        }
+      }
+    },
+    "Menu height": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menu height"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "菜单高度"
+          }
+        }
+      }
+    },
+    "Menus still scroll on smaller screens.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Menus still scroll on smaller screens."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "小屏幕上的菜单仍可滚动。"
+          }
+        }
+      }
+    },
+    "Manual and automatic modes both require this one-time approval. CodeWake never uses an untracked administrator-command fallback.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manual and automatic modes both require this one-time approval. CodeWake never uses an untracked administrator-command fallback."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手动和自动模式都需要完成一次批准。CodeWake · 醒码 绝不会改用无法追踪的管理员命令。"
+          }
+        }
+      }
+    },
+    "manual hold": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "manual hold"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手动保持"
+          }
+        }
+      }
+    },
+    "Manual hold": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manual hold"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手动保持"
+          }
+        }
+      }
+    },
+    "Manual keep awake for": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manual keep awake for"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手动保持唤醒时长"
+          }
+        }
+      }
+    },
+    "Manual keep awake with lid closed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manual keep awake with lid closed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "合盖时手动保持唤醒"
+          }
+        }
+      }
+    },
+    "Manual timer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Manual timer"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "手动计时"
+          }
+        }
+      }
+    },
+    "Maximum time per turn": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maximum time per turn"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每轮最长时间"
+          }
+        }
+      }
+    },
+    "Needs repair": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needs repair"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要修复"
+          }
+        }
+      }
+    },
+    "Never": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Never"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "永不"
+          }
+        }
+      }
+    },
+    "No AI session": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No AI session"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无 AI 会话"
+          }
+        }
+      }
+    },
+    "No helper connection": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No helper connection"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未连接后台辅助程序"
+          }
+        }
+      }
+    },
+    "Normal sleep": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal sleep"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正常睡眠"
+          }
+        }
+      }
+    },
+    "Normal sleep policy active": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Normal sleep policy active"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正常睡眠策略已启用"
+          }
+        }
+      }
+    },
+    "Not connected to power": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not connected to power"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未接通电源"
+          }
+        }
+      }
+    },
+    "Not installed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not installed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未安装"
+          }
+        }
+      }
+    },
+    "Not on charger": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not on charger"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未连接充电器"
+          }
+        }
+      }
+    },
+    "Not used while “Automatically enable when charging” is on.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not used while “Automatically enable when charging” is on."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "开启“接通电源时自动启用”后不使用此项。"
+          }
+        }
+      }
+    },
+    "Observed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Observed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已观察"
+          }
+        }
+      }
+    },
+    "Observed events": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Observed events"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已观察到的事件"
+          }
+        }
+      }
+    },
+    "OK": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "OK"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "好"
+          }
+        }
+      }
+    },
+    "Only while charging": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Only while charging"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅在充电时"
+          }
+        }
+      }
+    },
+    "Open Login Items to approve…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Open Login Items to approve…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开“登录项”进行批准…"
+          }
+        }
+      }
+    },
+    "Overrides the lid-close sleep that normally stops everything when you shut the lid.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Overrides the lid-close sleep that normally stops everything when you shut the lid."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "覆盖通常会在合盖后停止所有任务的睡眠行为。"
+          }
+        }
+      }
+    },
+    "Partially installed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Partially installed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分已安装"
+          }
+        }
+      }
+    },
+    "Pause when running hot": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pause when running hot"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "温度过高时暂停"
+          }
+        }
+      }
+    },
+    "PAUSED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PAUSED"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已暂停"
+          }
+        }
+      }
+    },
+    "permission": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "permission"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待授权"
+          }
+        }
+      }
+    },
+    "plan confirmation": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "plan confirmation"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待确认计划"
+          }
+        }
+      }
+    },
+    "Quit CodeWake": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quit CodeWake"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "退出 CodeWake · 醒码"
+          }
+        }
+      }
+    },
+    "Received": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Received"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "接收时间"
+          }
+        }
+      }
+    },
+    "Recent event diagnostics": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Recent event diagnostics"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最近事件诊断"
+          }
+        }
+      }
+    },
+    "Reinstall Helper…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reinstall Helper…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新安装辅助程序…"
+          }
+        }
+      }
+    },
+    "Rejection code": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rejection code"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拒绝码"
+          }
+        }
+      }
+    },
+    "Remove": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remove"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除"
+          }
+        }
+      }
+    },
+    "Repair integrations…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Repair integrations…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修复集成…"
+          }
+        }
+      }
+    },
+    "Required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Required"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "必需"
+          }
+        }
+      }
+    },
+    "Restart CodeWake to finish connecting to the background helper.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart CodeWake to finish connecting to the background helper."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请重启 CodeWake · 醒码，以完成与后台辅助程序的连接。"
+          }
+        }
+      }
+    },
+    "Restart Now": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart Now"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "立即重启"
+          }
+        }
+      }
+    },
+    "restoring system sleep": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "restoring system sleep"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在恢复系统睡眠"
+          }
+        }
+      }
+    },
+    "Running hot": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running hot"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "温度过高"
+          }
+        }
+      }
+    },
+    "Safety": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Safety"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全"
+          }
+        }
+      }
+    },
+    "safety pause": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "safety pause"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安全暂停"
+          }
+        }
+      }
+    },
+    "SESSION ENDED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "SESSION ENDED"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "会话已结束"
+          }
+        }
+      }
+    },
+    "Settings…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Settings…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置…"
+          }
+        }
+      }
+    },
+    "Show All": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show All"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示全部"
+          }
+        }
+      }
+    },
+    "Show Setup Guide…": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Show Setup Guide…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示设置指南…"
+          }
+        }
+      }
+    },
+    "Sleep prevention active": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleep prevention active"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "防睡眠已启用"
+          }
+        }
+      }
+    },
+    "Sleep prevention was turned off outside CodeWake.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleep prevention was turned off outside CodeWake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码 之外的操作关闭了防睡眠。"
+          }
+        }
+      }
+    },
+    "Sleep prevention was turned on outside CodeWake.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sleep prevention was turned on outside CodeWake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码 之外的操作开启了防睡眠。"
+          }
+        }
+      }
+    },
+    "sleep request failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sleep request failed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "睡眠请求失败"
+          }
+        }
+      }
+    },
+    "sleep requested": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "sleep requested"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已请求睡眠"
+          }
+        }
+      }
+    },
+    "Start a Codex or Claude Code turn, leave the Mac plugged in and ventilated, then close the lid. CodeWake keeps it awake while work is active. A successful final Stop gets a cancelable five-second confirmation before the closed Mac sleeps; waiting for input keeps its five-minute grace.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Start a Codex or Claude Code turn, leave the Mac plugged in and ventilated, then close the lid. CodeWake keeps it awake while work is active. A successful final Stop gets a cancelable five-second confirmation before the closed Mac sleeps; waiting for input keeps its five-minute grace."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启动一轮 Codex 或 Claude Code 任务，让 Mac 保持接通电源和良好通风，然后合上上盖。工作进行时，CodeWake · 醒码 会保持唤醒。最后一次 Stop 成功后，会进行可取消的五秒确认，再让合盖的 Mac 睡眠；等待输入时仍保留五分钟宽限期。"
+          }
+        }
+      }
+    },
+    "Status": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Status"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "状态"
+          }
+        }
+      }
+    },
+    "system sleep restored": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "system sleep restored"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢复系统睡眠"
+          }
+        }
+      }
+    },
+    "system sleep restored; display state was unknown at completion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "system sleep restored; display state was unknown at completion"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢复系统睡眠；完成时显示器状态未知"
+          }
+        }
+      }
+    },
+    "system sleep restored; external display was connected at completion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "system sleep restored; external display was connected at completion"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢复系统睡眠；完成时已连接外接显示器"
+          }
+        }
+      }
+    },
+    "system sleep restored; helper update required": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "system sleep restored; helper update required"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢复系统睡眠；需要更新辅助程序"
+          }
+        }
+      }
+    },
+    "system sleep restored; lid was open at completion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "system sleep restored; lid was open at completion"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢复系统睡眠；完成时上盖打开"
+          }
+        }
+      }
+    },
+    "system sleep restored; lid state was unknown at completion": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "system sleep restored; lid state was unknown at completion"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已恢复系统睡眠；完成时上盖状态未知"
+          }
+        }
+      }
+    },
+    "Temporarily disabled because the following check(s) failed:": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Temporarily disabled because the following check(s) failed:"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "因以下检查未通过而暂时停用："
+          }
+        }
+      }
+    },
+    "The AI event runtime directory has unsafe ownership or permissions.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The AI event runtime directory has unsafe ownership or permissions."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 事件运行目录的所有权或权限不安全。"
+          }
+        }
+      }
+    },
+    "The AI event socket path is occupied by a non-socket file.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The AI event socket path is occupied by a non-socket file."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 事件套接字路径被非套接字文件占用。"
+          }
+        }
+      }
+    },
+    "The AI event socket path is too long.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The AI event socket path is too long."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 事件套接字路径过长。"
+          }
+        }
+      }
+    },
+    "The background helper could not release the wake lease.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper could not release the wake lease."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序无法释放唤醒租约。"
+          }
+        }
+      }
+    },
+    "The background helper didn’t respond.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper didn’t respond."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序没有响应。"
+          }
+        }
+      }
+    },
+    "The background helper has an unexpected active lease. Reinstall it before continuing.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper has an unexpected active lease. Reinstall it before continuing."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序存在意外的活动租约。请重新安装后再继续。"
+          }
+        }
+      }
+    },
+    "The background helper is being reinstalled. Try again in a moment.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper is being reinstalled. Try again in a moment."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在重新安装后台辅助程序，请稍后重试。"
+          }
+        }
+      }
+    },
+    "The background helper is expiring a stale keep-awake lease.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper is expiring a stale keep-awake lease."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序正在清理过期的保持唤醒租约。"
+          }
+        }
+      }
+    },
+    "The background helper is still restoring a previous keep-awake lease.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper is still restoring a previous keep-awake lease."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序仍在恢复之前的保持唤醒租约。"
+          }
+        }
+      }
+    },
+    "The background helper isn’t responding.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper isn’t responding."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序没有响应。"
+          }
+        }
+      }
+    },
+    "The background helper registration is still unavailable and will retry next launch.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper registration is still unavailable and will retry next launch."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序仍无法注册，将在下次启动时重试。"
+          }
+        }
+      }
+    },
+    "The background helper returned an invalid release result.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper returned an invalid release result."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序返回了无效的释放结果。"
+          }
+        }
+      }
+    },
+    "The background helper returned no release result.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper returned no release result."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序没有返回释放结果。"
+          }
+        }
+      }
+    },
+    "The bundled LidlessAIHookBridge is not a regular executable file.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The bundled LidlessAIHookBridge is not a regular executable file."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用包中的 LidlessAIHookBridge 不是普通可执行文件。"
+          }
+        }
+      }
+    },
+    "The change didn’t hold — the system reports keep-awake is off.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The change didn’t hold — the system reports keep-awake is off."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更改未能保持；系统报告保持唤醒已关闭。"
+          }
+        }
+      }
+    },
+    "The change didn’t hold — the system reports keep-awake is on.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The change didn’t hold — the system reports keep-awake is on."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更改未能保持；系统报告保持唤醒已开启。"
+          }
+        }
+      }
+    },
+    "The Codex configuration has an unsupported or invalid top-level notify value. No changes were made.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Codex configuration has an unsupported or invalid top-level notify value. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex 配置包含不受支持或无效的顶层 notify 值，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "The current wake lease could not be released safely.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The current wake lease could not be released safely."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法安全释放当前唤醒租约。"
+          }
+        }
+      }
+    },
+    "The helper clock is invalid.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The helper clock is invalid."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助程序时钟无效。"
+          }
+        }
+      }
+    },
+    "The helper has a wake lease that CodeWake cannot safely release.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The helper has a wake lease that CodeWake cannot safely release."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助程序存在 CodeWake · 醒码 无法安全释放的唤醒租约。"
+          }
+        }
+      }
+    },
+    "The helper lease directory has an unsafe owner or permissions.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The helper lease directory has an unsafe owner or permissions."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助程序租约目录的所有者或权限不安全。"
+          }
+        }
+      }
+    },
+    "The helper lease directory is not a real directory.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The helper lease directory is not a real directory."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助程序租约目录不是真实目录。"
+          }
+        }
+      }
+    },
+    "The helper lease directory is not a trusted directory.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The helper lease directory is not a trusted directory."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助程序租约目录不受信任。"
+          }
+        }
+      }
+    },
+    "The helper lease journal changed while it was being opened.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The helper lease journal changed while it was being opened."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开辅助程序租约日志时，文件发生变化。"
+          }
+        }
+      }
+    },
+    "The helper lease journal has an unsafe owner or permissions.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The helper lease journal has an unsafe owner or permissions."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助程序租约日志的所有者或权限不安全。"
+          }
+        }
+      }
+    },
+    "The helper lease journal is unexpectedly large.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The helper lease journal is unexpectedly large."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "辅助程序租约日志异常过大。"
+          }
+        }
+      }
+    },
+    "The hook configuration changed while it was being read. No changes were made.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The hook configuration changed while it was being read. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "读取期间 Hook 配置发生变化，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "The hook configuration could not be read safely. No changes were made.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The hook configuration could not be read safely. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法安全读取 Hook 配置，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "The hook configuration exceeds the 2 MiB safety limit. No changes were made.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The hook configuration exceeds the 2 MiB safety limit. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hook 配置超过 2 MiB 安全限制，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "The hook configuration is not valid JSON. No changes were made.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The hook configuration is not valid JSON. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hook 配置不是有效的 JSON，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "The hook configuration must be a regular file, not a symlink or special file. No changes were made.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The hook configuration must be a regular file, not a symlink or special file. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hook 配置必须是普通文件，不能是符号链接或特殊文件。未进行任何更改。"
+          }
+        }
+      }
+    },
+    "The hook configuration must contain a JSON object. No changes were made.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The hook configuration must contain a JSON object. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hook 配置必须包含 JSON 对象，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "The replacement helper is not the current version; repair will retry next launch.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The replacement helper is not the current version; repair will retry next launch."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "替换后的辅助程序不是当前版本，将在下次启动时重试修复。"
+          }
+        }
+      }
+    },
+    "The running background helper is from an older app build.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The running background helper is from an older app build."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在运行的后台辅助程序来自旧版应用。"
+          }
+        }
+      }
+    },
+    "This local development build has no automatic update feed. A CodeWake update channel will require its own signed and notarized releases.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This local development build has no automatic update feed. A CodeWake update channel will require its own signed and notarized releases."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此本地开发版本没有自动更新源。CodeWake · 醒码 更新通道需要独立签名并完成公证的发布版本。"
+          }
+        }
+      }
+    },
+    "timer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "timer"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "计时器"
+          }
+        }
+      }
+    },
+    "Turning off in %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turning off in %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将在 %@ 后关闭"
+          }
+        }
+      }
+    },
+    "Type": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Type"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "类型"
+          }
+        }
+      }
+    },
+    "v%@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "v%@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "v%@"
+          }
+        }
+      }
+    },
+    "Version %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Version %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "版本 %@"
+          }
+        }
+      }
+    },
+    "View the original Lidless project": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "View the original Lidless project"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "查看原始 Lidless 项目"
+          }
+        }
+      }
+    },
+    "WAIT EXPIRED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WAIT EXPIRED"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待已超时"
+          }
+        }
+      }
+    },
+    "WAITING": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WAITING"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待中"
+          }
+        }
+      }
+    },
+    "Wake source: %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wake source: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "唤醒来源：%@"
+          }
+        }
+      }
+    },
+    "Welcome to CodeWake": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to CodeWake"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "欢迎使用 CodeWake · 醒码"
+          }
+        }
+      }
+    },
+    "When AI waits for input": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When AI waits for input"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 等待输入时"
+          }
+        }
+      }
+    },
+    "When an AI task finishes or its input wait expires, CodeWake releases its hold. With an external display connected, macOS system sleep settings remain in control.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When an AI task finishes or its input wait expires, CodeWake releases its hold. With an external display connected, macOS system sleep settings remain in control."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 任务完成或等待输入超时后，CodeWake · 醒码 会释放其保持。连接外接显示器时，仍由 macOS 系统睡眠设置控制。"
+          }
+        }
+      }
+    },
+    "WORKING": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "WORKING"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工作中"
+          }
+        }
+      }
+    },
+    "You're all set": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're all set"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一切准备就绪"
+          }
+        }
+      }
+    },
+    "Your Mac is running hot, so keep-awake is paused. It'll be available again once the Mac cools down.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your Mac is running hot, so keep-awake is paused. It'll be available again once the Mac cools down."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 温度过高，因此保持唤醒已暂停。Mac 冷却后即可再次使用。"
+          }
+        }
+      }
+    },
+    "Couldn’t update the launch-at-login setting.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t update the launch-at-login setting."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法更新登录时启动设置。"
+          }
+        }
+      }
+    },
+    "AI integrations could not be installed completely. Review the configuration and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI integrations could not be installed completely. Review the configuration and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 集成未能完整安装。请检查配置后重试。"
+          }
+        }
+      }
+    },
+    "AI integrations could not be removed completely. Review the configuration and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI integrations could not be removed completely. Review the configuration and try again."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 集成未能完整移除。请检查配置后重试。"
+          }
+        }
+      }
+    },
+    "The background helper could not be installed.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper could not be installed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序无法安装。"
+          }
+        }
+      }
+    },
+    "The background helper could not be repaired.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper could not be repaired."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序无法修复。"
+          }
+        }
+      }
+    },
+    "The background helper could not update keep-awake.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper could not update keep-awake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序无法更新防睡眠状态。"
+          }
+        }
+      }
+    },
+    "The background helper lost its keep-awake lease.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper lost its keep-awake lease."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序丢失了防睡眠租约。"
+          }
+        }
+      }
+    },
+    "The AI event bridge could not start.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The AI event bridge could not start."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 事件桥接无法启动。"
+          }
+        }
+      }
+    },
+    "The background helper version could not be verified.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The background helper version could not be verified."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法验证后台辅助程序版本。"
+          }
+        }
+      }
+    },
+    "Couldn’t request system sleep; normal sleep policy was restored.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Couldn’t request system sleep; normal sleep policy was restored."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法请求系统睡眠；已恢复正常睡眠策略。"
+          }
+        }
+      }
+    },
+    "agent.blockers.remain": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ remains"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 仍在生效"
+          }
+        }
+      }
+    },
+    "agent.event_bridge.start_failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The AI event bridge could not start."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "AI 事件桥接无法启动。"
+          }
+        }
+      }
+    },
+    "agent.input_wait_release": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input-wait release in: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "等待输入释放倒计时：%@"
+          }
+        }
+      }
+    },
+    "ai.wait.immediate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Immediate"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "立即"
+          }
+        }
+      }
+    },
+    "auto_off.elapsed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-off: %@ elapsed."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自动关闭：已过 %@。"
+          }
+        }
+      }
+    },
+    "diagnostics.none_observed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "None observed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未观察到"
+          }
+        }
+      }
+    },
+    "duration.no_limit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No limit"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无限制"
+          }
+        }
+      }
+    },
+    "error.unexpected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An unexpected error occurred."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "发生了意外错误。"
+          }
+        }
+      }
+    },
+    "helper.failure.reinstall_detail": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@\n\nThis usually happens after an update. Reinstalling the background helper fixes it."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@\n\n这通常发生在更新后。重新安装后台辅助程序即可修复。"
+          }
+        }
+      }
+    },
+    "helper.recovery.needs_attention": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background helper recovery needs attention."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "后台辅助程序恢复需要处理。"
+          }
+        }
+      }
+    },
+    "helper.repair.retry_next_launch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Background helper repair will retry next launch."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将在下次启动时重试后台辅助程序修复。"
+          }
+        }
+      }
+    },
+    "hook.error.conflicting_bridge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A different CodeWake bridge command already exists. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已存在其他 CodeWake · 醒码 桥接命令，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "hook.error.incompatible_value": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The hook configuration contains an incompatible value. No changes were made."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hook 配置包含不兼容的值，未进行任何更改。"
+          }
+        }
+      }
+    },
+    "safety.auto_paused.low_battery": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Auto-paused: battery %d%% on battery power."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已自动暂停：当前使用电池，电量为 %d%%。"
+          }
+        }
+      }
+    },
+    "safety.blocked.low_battery": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery is at %d%%. Charge above the low-battery cutoff to keep your Mac awake."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "电池电量为 %d%%。请充至高于低电量阈值后再保持 Mac 唤醒。"
+          }
+        }
+      }
+    },
+    "safety.check.high_thermal": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Running hot"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "温度过高"
+          }
+        }
+      }
+    },
+    "safety.check.low_battery": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Battery %d%% is at or below the cutoff"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "电池电量 %d%% 已达到或低于阈值"
+          }
+        }
+      }
+    },
+    "safety.check.not_charging": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not on charger"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未连接充电器"
+          }
+        }
+      }
+    },
+    "safety.check.not_on_power": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not connected to power"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未接通电源"
+          }
+        }
+      }
+    },
+    "window.onboarding.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome to CodeWake"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "欢迎使用 CodeWake · 醒码"
+          }
+        }
+      }
+    },
+    "window.settings.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake Settings"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CodeWake · 醒码 设置"
+          }
+        }
+      }
+    },
+    "agent.count.finishing": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d finishing"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d finishing"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d 个收尾中"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "agent.count.waiting": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d waiting"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d waiting"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d 个等待中"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "agent.count.working": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d working"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d working"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d 个进行中"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "agent.task_count": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d task"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d tasks"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d 个任务"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ai.maximum.hours": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d hour"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d hours"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d 小时"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "ai.wait.minutes": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d minute"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d minutes"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d 分钟"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "display.accessibility.multiple_named": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d external displays connected: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已连接 %d 台外接显示器：%@"
+          }
+        }
+      }
+    },
+    "display.status.connected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External display: Connected"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外接显示器：已连接"
+          }
+        }
+      }
+    },
+    "display.status.disconnected": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External display: Not connected"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外接显示器：未连接"
+          }
+        }
+      }
+    },
+    "display.status.multiple": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%d external displays connected"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外接显示器：已连接（%d 台）"
+          }
+        }
+      }
+    },
+    "display.status.named": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External display: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外接显示器：%@"
+          }
+        }
+      }
+    },
+    "display.status.unknown": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "External display: Unable to detect"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "外接显示器：无法检测"
+          }
+        }
+      }
+    },
+    "onboarding.step_progress": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step %d of %d"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第 %d 步，共 %d 步"
+          }
+        }
+      }
+    },
+    "Codex status & recovery": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Codex status & recovery" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "Codex 状态与恢复" } }
+      }
+    },
+    "Codex status": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Codex status" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "Codex 状态" } }
+      }
+    },
+    "Codex task cancelled": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex task cancelled"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已检测到 Codex 任务取消"
+          }
+        }
+      }
+    },
+    "Codex cancellation detected. The cancelled task is no longer counted as active. CodeWake does not request immediate sleep.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex cancellation detected. The cancelled task is no longer counted as active. CodeWake does not request immediate sleep."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已检测到 Codex 任务取消。该任务将不再计为活动任务，CodeWake · 醒码 不会请求立即睡眠。"
+          }
+        }
+      }
+    },
+    "Emergency recovery": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Emergency recovery" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "紧急恢复" } }
+      }
+    },
+    "Clears every CodeWake keep-awake hold and returns control to macOS. It does not force immediate sleep.": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Clears every CodeWake keep-awake hold and returns control to macOS. It does not force immediate sleep." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "清除所有 CodeWake · 醒码 保持并将休眠控制权交还 macOS，不会强制立即休眠。" } }
+      }
+    },
+    "Task": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Task" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "任务" } }
+      }
+    },
+    "Refresh Codex Status": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Refresh Codex Status" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "刷新 Codex 状态" } }
+      }
+    },
+    "Refreshing…": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Refreshing…" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "正在刷新…" } }
+      }
+    },
+    "Restore Normal Sleep": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Restore Normal Sleep" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "恢复正常休眠" } }
+      }
+    },
+    "Restoring…": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Restoring…" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "正在恢复…" } }
+      }
+    },
+    "Quitting…": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Quitting…" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "正在退出…" } }
+      }
+    },
+    "codex.software.not_checked": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Not checked" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "尚未检查" } }
+      }
+    },
+    "codex.software.desktop_open": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Desktop app open" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "桌面版已开启" } }
+      }
+    },
+    "codex.software.cli_open": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "CLI open" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "CLI 已开启" } }
+      }
+    },
+    "codex.software.both_open": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Desktop app and CLI open" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "桌面版和 CLI 均已开启" } }
+      }
+    },
+    "codex.software.not_detected": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Not detected" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "未检测到" } }
+      }
+    },
+    "codex.software.detection_failed": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Unable to detect" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "无法检测" } }
+      }
+    },
+    "codex.task.working": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Working (%d)" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "工作中（%d）" } }
+      }
+    },
+    "codex.task.waiting": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Waiting (%d)" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "等待中（%d）" } }
+      }
+    },
+    "codex.task.waiting.input": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Waiting for input (%d)" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "等待输入（%d）" } }
+      }
+    },
+    "codex.task.waiting.plan": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Waiting for plan confirmation (%d)" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "等待确认计划（%d）" } }
+      }
+    },
+    "codex.task.waiting.permission": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Waiting for permission (%d)" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "等待授权（%d）" } }
+      }
+    },
+    "codex.task.finishing": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Confirming completion (%d)" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "正在确认完成（%d）" } }
+      }
+    },
+    "codex.task.idle": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "No active task" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "无活动任务" } }
+      }
+    },
+    "codex.task.unknown": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Status unknown" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "状态未知" } }
+      }
+    },
+    "codex.task.unknown_count": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Unknown (%d)" } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "未知（%d）" } }
+      }
+    },
+    "codex.restore.result.restored": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Normal sleep restored. All CodeWake holds were cleared." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "已恢复正常休眠，当前 CodeWake · 醒码 保持已全部清除。" } }
+      }
+    },
+    "codex.restore.result.already_normal": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Normal sleep was already active." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "当前已是正常休眠状态。" } }
+      }
+    },
+    "codex.restore.result.other_setting": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "CodeWake released its hold, but another app or system setting still prevents sleep." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "CodeWake · 醒码 已释放，但其他程序或系统设置仍在防止休眠。" } }
+      }
+    },
+    "codex.restore.result.failed": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "CodeWake could not confirm that normal sleep was restored." } },
+        "zh-Hans": { "stringUnit": { "state": "translated", "value": "CodeWake · 醒码 无法确认已恢复正常休眠。" } }
+      }
+    },
+    "duration.hours": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d hour"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d hours"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d 小时"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "duration.minutes": {
+      "localizations": {
+        "en": {
+          "variations": {
+            "plural": {
+              "one": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d min"
+                }
+              },
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d min"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hans": {
+          "variations": {
+            "plural": {
+              "other": {
+                "stringUnit": {
+                  "state": "translated",
+                  "value": "%d 分钟"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
