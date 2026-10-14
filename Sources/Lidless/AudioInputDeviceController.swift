@@ -367,11 +367,11 @@ final class AudioInputDeviceController: ObservableObject {
             throw fail(.topologyChanged, attempt: attempt, reason: .topologyDrift, slot: route.slot)
         }
         switch source.isRunningSomewhere {
-        case true:
+        case .some(true):
             throw fail(.inputInUse, attempt: attempt, reason: .busy, slot: route.slot)
-        case nil:
+        case .none:
             throw fail(.inputActivityUnknown, attempt: attempt, reason: .activityUnknown, slot: route.slot)
-        case false:
+        case .some(false):
             break
         }
 

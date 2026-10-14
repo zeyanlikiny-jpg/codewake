@@ -50,11 +50,11 @@ enum AudioInputSwitchPresentation: Equatable, Sendable {
             return .currentInputActivityUnknown
         }
         switch isRunningSomewhere {
-        case true:
+        case .some(true):
             return .currentInputInUse
-        case nil:
+        case .none:
             return .currentInputActivityUnknown
-        case false:
+        case .some(false):
             return nil
         }
     }

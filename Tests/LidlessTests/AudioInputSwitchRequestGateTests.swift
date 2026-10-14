@@ -78,7 +78,7 @@ final class AudioInputSwitchRequestGateTests: XCTestCase {
         )
     }
 
-    func testStableCurrentInputStillFailsClosedForUntrustedOrUnknownActivity() {
+    func testStableCurrentInputUsesTrustAndActivityState() {
         XCTAssertEqual(
             AudioInputSwitchPresentation.blockingCurrentInputState(
                 displayName: "MacBook Pro Microphone",
@@ -107,6 +107,16 @@ final class AudioInputSwitchRequestGateTests: XCTestCase {
                 isAvailable: true,
                 isRunningSomewhere: false
             )
+        )
+        XCTAssertEqual(
+            AudioInputSwitchPresentation.blockingCurrentInputState(
+                displayName: "MacBook Pro Microphone",
+                stability: .stable,
+                observationIsTrustworthy: true,
+                isAvailable: true,
+                isRunningSomewhere: true
+            ),
+            .currentInputInUse
         )
     }
 
