@@ -73,6 +73,35 @@ final class AgentProcessMonitorTests: XCTestCase {
         )
     }
 
+    func testClaudeDesktopCodeTabRuntimeIsClaudeCodeDesktop() {
+        XCTAssertEqual(
+            AgentProcessProvider.executionSurface(
+                executableName: "claude",
+                executablePath: "/Users/test/Library/Application Support/Claude/claude-code/2.1.308/a93ded4b1b47/claude.app/Contents/MacOS/claude",
+                parentExecutablePath: "/Applications/Claude.app/Contents/Helpers/disclaimer"
+            ),
+            .claudeCodeDesktop
+        )
+        // An unrelated bundle named claude.app elsewhere is still not proof.
+        XCTAssertNil(AgentProcessProvider.executionSurface(
+            executableName: "claude",
+            executablePath: "/Users/test/Downloads/claude.app/Contents/MacOS/claude",
+            parentExecutablePath: "/bin/zsh"
+        ))
+        XCTAssertNil(AgentProcessProvider.executionSurface(
+            executableName: "Claude",
+            executablePath: "/Applications/Claude.app/Contents/MacOS/Claude",
+            parentExecutablePath: "/sbin/launchd"
+        ))
+    }
+
+    func testDesktopSurfacesNeverCreateStandaloneDiscovery() {
+        XCTAssertFalse(AgentExecutionSurface.codexDesktop.supportsStandaloneDiscovery)
+        XCTAssertFalse(AgentExecutionSurface.claudeCodeDesktop.supportsStandaloneDiscovery)
+        XCTAssertTrue(AgentExecutionSurface.claudeCodeCLI.supportsStandaloneDiscovery)
+        XCTAssertEqual(AgentExecutionSurface.claudeCodeDesktop.provider, .claude)
+    }
+
     func testCodexPresenceDistinguishesDesktopCLIAndBoth() {
         XCTAssertEqual(
             CodexProcessPresence(scan: scan(surfaces: [.codexDesktop])),
@@ -92,7 +121,7 @@ final class AgentProcessMonitorTests: XCTestCase {
         XCTAssertEqual(CodexProcessPresence(scan: nil), .scanFailed)
         XCTAssertEqual(CodexProcessPresence(scan: scan(surfaces: [])), .notDetected)
         XCTAssertEqual(
-            scan(surfaces: [.claudeCodeCLI]).codexPresence,
+            scan(surfaces: [.claudeCodeCLI, .claudeCodeDesktop]).codexPresence,
             .notDetected
         )
     }
@@ -181,7 +210,7 @@ final class AgentProcessMonitorTests: XCTestCase {
                     startTimeMicroseconds: UInt64(index + 100)
                 ),
                 parentPID: 1,
-                executableName: surface == .claudeCodeCLI ? "claude" : "codex",
+                executableName: surface.provider == .claude ? "claude" : "codex",
                 executionSurface: surface,
                 cumulativeCPUNanoseconds: cpuNanoseconds
             )

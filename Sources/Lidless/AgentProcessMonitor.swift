@@ -28,19 +28,24 @@ enum AgentExecutionSurface: String, Equatable, Sendable {
     case codexDesktop
     case codexCLI
     case claudeCodeCLI
+    /// Claude Code hosted by the Claude desktop app's Code tab. The desktop
+    /// app ships it as a separate versioned `claude.app` bundle under its
+    /// Application Support directory, distinct from the Electron main binary.
+    case claudeCodeDesktop
 
     var provider: AgentProcessProvider {
         switch self {
         case .codexDesktop, .codexCLI: return .codex
-        case .claudeCodeCLI: return .claude
+        case .claudeCodeCLI, .claudeCodeDesktop: return .claude
         }
     }
 
-    /// A long-lived Codex Desktop app-server process is presence evidence for a
-    /// hook event, not evidence that any task is active. Only standalone CLIs
-    /// may create the process-fallback's anonymous discovery session.
+    /// A long-lived Codex Desktop app-server process, or an idle Claude desktop
+    /// Code-tab session, is presence evidence for a hook event, not evidence
+    /// that any task is active. Only standalone CLIs may create the
+    /// process-fallback's anonymous discovery session.
     var supportsStandaloneDiscovery: Bool {
-        self != .codexDesktop
+        self != .codexDesktop && self != .claudeCodeDesktop
     }
 }
 
@@ -101,7 +106,7 @@ enum CodexProcessPresence: String, Equatable, Sendable {
                 desktopDetected = true
             case .codexCLI:
                 cliDetected = true
-            case .claudeCodeCLI:
+            case .claudeCodeCLI, .claudeCodeDesktop:
                 continue
             }
         }
@@ -203,9 +208,12 @@ enum AgentProcessProvider: String, Equatable, Sendable {
                 ? .codexDesktop
                 : .codexCLI
         case .claude:
-            // Claude Desktop is not Claude Code and must never become an AI
-            // wake source merely because an embedded helper is named `claude`.
-            return embeddedApp == nil ? .claudeCodeCLI : nil
+            // The Claude desktop app itself is not Claude Code and must never
+            // become an AI wake source merely because its main binary is
+            // named `Claude`. Only its separately bundled Claude Code runtime
+            // counts as the desktop surface.
+            guard let embeddedApp else { return .claudeCodeCLI }
+            return isClaudeDesktopCodeBundle(embeddedApp) ? .claudeCodeDesktop : nil
         }
     }
 
@@ -218,6 +226,12 @@ enum AgentProcessProvider: String, Equatable, Sendable {
     private static func isCodexDesktopBundle(_ path: String) -> Bool {
         let bundleName = URL(fileURLWithPath: path).lastPathComponent
         return bundleName == "chatgpt.app" || bundleName == "codex.app"
+    }
+
+    /// `containingAppBundle` already lowercases the path.
+    private static func isClaudeDesktopCodeBundle(_ path: String) -> Bool {
+        URL(fileURLWithPath: path).lastPathComponent == "claude.app"
+            && path.contains("/library/application support/claude/claude-code/")
     }
 }
 

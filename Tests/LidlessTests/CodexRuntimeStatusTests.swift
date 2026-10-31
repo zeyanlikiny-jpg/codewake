@@ -319,6 +319,54 @@ final class CodexRuntimeStatusTests: XCTestCase {
         )
     }
 
+    func testMenuBarIconColorsClaudeCodeLifecycle() {
+        func claude(_ phase: AgentSessionPhase) -> CodexTaskSemanticStatus {
+            CodexTaskSemanticStatus.summarize(
+                sessions: [state(provider: .claudeCode, phase: phase)],
+                at: now,
+                provider: .claudeCode
+            )
+        }
+
+        XCTAssertEqual(
+            MenuBarIconPresentation.resolve(
+                isKeepAwakeActive: true,
+                isManualKeepAwakeActive: false,
+                codexStatus: nil,
+                claudeStatus: claude(.working)
+            ),
+            .working
+        )
+        XCTAssertEqual(
+            MenuBarIconPresentation.resolve(
+                isKeepAwakeActive: true,
+                isManualKeepAwakeActive: false,
+                codexStatus: .idle,
+                claudeStatus: claude(.waitingForInput)
+            ),
+            .attention
+        )
+        XCTAssertEqual(
+            MenuBarIconPresentation.resolve(
+                isKeepAwakeActive: false,
+                isManualKeepAwakeActive: false,
+                codexStatus: nil,
+                claudeStatus: claude(.working)
+            ),
+            .normal,
+            "Claude work never colors the icon without a verified wake hold."
+        )
+        XCTAssertEqual(
+            MenuBarIconPresentation.resolve(
+                isKeepAwakeActive: true,
+                isManualKeepAwakeActive: false,
+                codexStatus: nil,
+                claudeStatus: .idle
+            ),
+            .normal
+        )
+    }
+
     func testMenuBarIconIsGreenForWorkingCodexOnly() {
         let working = CodexTaskSemanticStatus.summarize(
             sessions: [state(phase: .working)],

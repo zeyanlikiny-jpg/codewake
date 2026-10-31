@@ -128,7 +128,11 @@ struct SettingsView: View {
                         observed: state.codexDesktopObserved
                     )
                     integrationObservation("Codex CLI", observed: state.codexCLIObserved)
-                    integrationObservation("Claude Code", observed: state.claudeCodeObserved)
+                    integrationObservation("Claude Code CLI", observed: state.claudeCodeObserved)
+                    integrationObservation(
+                        "Claude Desktop",
+                        observed: state.claudeDesktopObserved
+                    )
                 }
 
                 VStack(alignment: .leading, spacing: 6) {

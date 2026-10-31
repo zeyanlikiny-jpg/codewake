@@ -9,15 +9,36 @@ public struct AgentIntegrationObservations: Codable, Equatable {
     public var codexDesktop: Bool
     public var codexCLI: Bool
     public var claudeCode: Bool
+    public var claudeDesktop: Bool
 
     public init(bridgeSchemaVersion: Int,
                 codexDesktop: Bool = false,
                 codexCLI: Bool = false,
-                claudeCode: Bool = false) {
+                claudeCode: Bool = false,
+                claudeDesktop: Bool = false) {
         self.bridgeSchemaVersion = bridgeSchemaVersion
         self.codexDesktop = codexDesktop
         self.codexCLI = codexCLI
         self.claudeCode = claudeCode
+        self.claudeDesktop = claudeDesktop
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case bridgeSchemaVersion, codexDesktop, codexCLI, claudeCode, claudeDesktop
+    }
+
+    /// `claudeDesktop` was added without a bridge schema bump; observations
+    /// stored before it existed must keep their other verified surfaces.
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        self.init(
+            bridgeSchemaVersion: try values.decode(Int.self, forKey: .bridgeSchemaVersion),
+            codexDesktop: try values.decode(Bool.self, forKey: .codexDesktop),
+            codexCLI: try values.decode(Bool.self, forKey: .codexCLI),
+            claudeCode: try values.decode(Bool.self, forKey: .claudeCode),
+            claudeDesktop: try values.decodeIfPresent(Bool.self, forKey: .claudeDesktop)
+                ?? false
+        )
     }
 }
 

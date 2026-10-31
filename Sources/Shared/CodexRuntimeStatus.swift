@@ -73,13 +73,15 @@ public enum CodexTaskSemanticStatus: Equatable, Sendable {
 
     /// Reduces turn-level states to root-task semantics. Within one root task,
     /// the most active turn wins: working, then waiting, finishing, and unknown.
-    /// Finished and hard-expired tasks are idle and are not counted.
+    /// Finished and hard-expired tasks are idle and are not counted. The same
+    /// reduction is reused for Claude Code root sessions via `provider`.
     public static func summarize(
         sessions: [AgentSessionState],
-        at now: Date
+        at now: Date,
+        provider: AgentProvider = .codex
     ) -> CodexTaskSemanticStatus {
         let codexSessions = Dictionary(grouping: sessions.lazy.filter {
-            $0.key.provider == .codex
+            $0.key.provider == provider
         }, by: \AgentSessionState.key)
 
         var workingCount = 0
@@ -184,8 +186,10 @@ public enum CodexTaskSemanticStatus: Equatable, Sendable {
 
 /// Presentation-only state for the menu-bar icon. Codex colors deliberately
 /// consume health-validated semantics rather than process presence or raw
-/// lifecycle counts. A separately verified manual hold may still claim green
-/// while Codex is idle or unknown.
+/// lifecycle counts. Claude Code has no separate idle-evidence channel, so only
+/// its positive working/waiting/finishing lifecycle states select a color. A
+/// separately verified manual hold may still claim green while agents are idle
+/// or unknown.
 enum MenuBarIconPresentation: Equatable, Sendable {
     case normal
     case manualActive
@@ -195,9 +199,20 @@ enum MenuBarIconPresentation: Equatable, Sendable {
     static func resolve(
         isKeepAwakeActive: Bool,
         isManualKeepAwakeActive: Bool,
-        codexStatus: CodexTaskSemanticStatus?
+        codexStatus: CodexTaskSemanticStatus?,
+        claudeStatus: CodexTaskSemanticStatus? = nil
     ) -> MenuBarIconPresentation {
         guard isKeepAwakeActive else { return .normal }
+
+        var claudeWorking = false
+        if let claudeStatus {
+            let details = claudeStatus.details
+            // Attention wins across providers, matching the Codex rule below.
+            if details.waitingCount > 0 || details.finishingCount > 0 {
+                return .attention
+            }
+            claudeWorking = details.workingCount > 0
+        }
 
         if let codexStatus {
             switch codexStatus {
@@ -217,6 +232,7 @@ enum MenuBarIconPresentation: Equatable, Sendable {
             }
         }
 
+        if claudeWorking { return .working }
         return isManualKeepAwakeActive ? .manualActive : .normal
     }
 }

@@ -36,9 +36,11 @@ own Apple Developer signing identity for local use; see
   system keep-awake rules continue to apply. The screen-on preference is only
   suspended until wake, and an existing built-in brightness blackout is restored
   before sending the request. Failed or unconfirmed requests show a menu warning.
-- Detects Codex Desktop, Codex CLI, and Claude Code turns using lifecycle
-  hooks. Codex's `agent-turn-complete` notification supplies the structured
-  plan-complete boundary that the plan approval card needs.
+- Detects Codex Desktop, Codex CLI, Claude Code CLI, and the Code tab in
+  Claude Desktop using lifecycle hooks. Opening Claude Desktop or an idle Code
+  session alone does not create a keep-awake request. Codex's
+  `agent-turn-complete` notification supplies the structured plan-complete
+  boundary that the plan approval card needs.
 - Acquires a keep-awake lease while an agent is working. A successful final
   `Stop` gets a cancelable five-second confirmation, then a closed Mac can sleep
   when no manual, timed, or charging hold remains, no external display is
@@ -101,8 +103,12 @@ keep-awake state unchanged. This compatibility fallback can be replaced by an
 official cancellation hook when one becomes available.
 
 The Settings window reports hook configuration separately from real runtime
-proof. Codex Desktop, Codex CLI, and Claude Code are each marked observed only
-after a current-schema event arrives with matching local process ancestry.
+proof. Codex Desktop, Codex CLI, Claude Code CLI, and Claude Desktop are each
+marked observed only after a current-schema event arrives with matching local
+process ancestry. Claude Desktop support applies to its bundled Claude Code
+runtime in the Code tab; ordinary Claude chats do not create wake requests.
+The menu-bar icon also reflects Claude working, waiting, and finishing states,
+with attention states taking priority across providers.
 During an App-before-hooks rolling upgrade, schema-v1/v2 Prompt events remain a
 conservative keep-awake signal, but legacy bridges are never marked observed and
 their Stop can only restore normal sleep after the legacy grace; it cannot

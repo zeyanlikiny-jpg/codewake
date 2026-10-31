@@ -1009,18 +1009,18 @@
         }
       }
     },
-    "After installation, approve the fixed CodeWake command in `/hooks`, then run one real turn in both Codex Desktop and Codex CLI. Claude Code uses its normal settings trust flow. Configuration alone is not shown as runtime verification.": {
+    "After installation, approve the fixed CodeWake command in `/hooks`, then run one real turn in both Codex Desktop and Codex CLI. Claude Code CLI and Claude Desktop use Claude Code's normal settings trust flow. Configuration alone is not shown as runtime verification.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "After installation, approve the fixed CodeWake command in `/hooks`, then run one real turn in both Codex Desktop and Codex CLI. Claude Code uses its normal settings trust flow. Configuration alone is not shown as runtime verification."
+            "value": "After installation, approve the fixed CodeWake command in `/hooks`, then run one real turn in both Codex Desktop and Codex CLI. Claude Code CLI and Claude Desktop use Claude Code's normal settings trust flow. Configuration alone is not shown as runtime verification."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "安装后，请在 `/hooks` 中批准固定的 CodeWake · 醒码 命令，然后分别在 Codex Desktop 和 Codex CLI 中实际运行一轮。Claude Code 使用其常规设置授权流程。仅完成配置不会显示为已通过运行验证。"
+            "value": "安装后，请在 `/hooks` 中批准固定的 CodeWake · 醒码 命令，然后分别在 Codex Desktop 和 Codex CLI 中实际运行一轮。Claude Code CLI 和 Claude Desktop 使用 Claude Code 的常规设置授权流程。仅完成配置不会显示为已通过运行验证。"
           }
         }
       }
@@ -2065,18 +2065,18 @@
         }
       }
     },
-    "Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, and Claude Code. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code.": {
+    "Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, Claude Code CLI, and Claude Desktop. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, and Claude Code. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code."
+            "value": "Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, Claude Code CLI, and Claude Desktop. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "安装由 Codex Desktop、Codex CLI 和 Claude Code 共用的隐私最小化生命周期 hooks。它们仅发送不透明 ID/令牌、事件类型、后台工作数量和时间，绝不会发送提示词、回答、路径、命令或源代码。"
+            "value": "安装由 Codex Desktop、Codex CLI、Claude Code CLI 和 Claude Desktop 共用的隐私最小化生命周期 hooks。它们仅发送不透明 ID/令牌、事件类型、后台工作数量和时间，绝不会发送提示词、回答、路径、命令或源代码。"
           }
         }
       }

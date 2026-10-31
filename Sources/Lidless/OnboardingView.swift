@@ -124,7 +124,7 @@ struct OnboardingView: View {
     private var agentIntegrationStep: some View {
         VStack(alignment: .leading, spacing: 18) {
             header(symbol: "terminal.fill", title: "Connect your coding agents")
-            Text("Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, and Claude Code. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code.")
+            Text("Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, Claude Code CLI, and Claude Desktop. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -140,7 +140,8 @@ struct OnboardingView: View {
                 .foregroundStyle(state.integrationHealthy ? .green : .primary)
                 observationRow("Codex Desktop", observed: state.codexDesktopObserved)
                 observationRow("Codex CLI", observed: state.codexCLIObserved)
-                observationRow("Claude Code", observed: state.claudeCodeObserved)
+                observationRow("Claude Code CLI", observed: state.claudeCodeObserved)
+                observationRow("Claude Desktop", observed: state.claudeDesktopObserved)
                 Button {
                     state.installAgentIntegrations()
                 } label: {
@@ -154,7 +155,7 @@ struct OnboardingView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(.quaternary.opacity(0.4), in: RoundedRectangle(cornerRadius: 10))
 
-            Text("After installation, approve the fixed CodeWake command in `/hooks`, then run one real turn in both Codex Desktop and Codex CLI. Claude Code uses its normal settings trust flow. Configuration alone is not shown as runtime verification.")
+            Text("After installation, approve the fixed CodeWake command in `/hooks`, then run one real turn in both Codex Desktop and Codex CLI. Claude Code CLI and Claude Desktop use Claude Code's normal settings trust flow. Configuration alone is not shown as runtime verification.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)

@@ -284,6 +284,7 @@ final class AppState: ObservableObject {
     @Published private(set) var isRefreshingCodexStatus = false
     @Published private(set) var codexProcessPresence: CodexProcessPresence?
     @Published private(set) var codexTaskSemanticStatus: CodexTaskSemanticStatus?
+    @Published private(set) var claudeTaskSemanticStatus: CodexTaskSemanticStatus?
 
     var codexSoftwareStatusText: String {
         let keyAndDefault: (String, String)
@@ -509,7 +510,8 @@ final class AppState: ObservableObject {
                 helperLeaseActive: helperLeaseActive
             ),
             isManualKeepAwakeActive: isManualKeepAwakeActive,
-            codexStatus: codexTaskSemanticStatus
+            codexStatus: codexTaskSemanticStatus,
+            claudeStatus: claudeTaskSemanticStatus
         )
     }
 
@@ -1519,6 +1521,7 @@ final class AppState: ObservableObject {
     var codexDesktopObserved: Bool { integrationObservations.codexDesktop }
     var codexCLIObserved: Bool { integrationObservations.codexCLI }
     var claudeCodeObserved: Bool { integrationObservations.claudeCode }
+    var claudeDesktopObserved: Bool { integrationObservations.claudeDesktop }
     var allAgentSurfacesObserved: Bool {
         codexDesktopObserved && codexCLIObserved && claudeCodeObserved
     }
@@ -2449,14 +2452,16 @@ final class AppState: ObservableObject {
             switch process?.executionSurface {
             case .codexDesktop: updated.codexDesktop = true
             case .codexCLI: updated.codexCLI = true
-            case .claudeCodeCLI, nil: break
+            case .claudeCodeCLI, .claudeCodeDesktop, nil: break
             }
         case .claudeCode:
             // Runtime verification additionally requires peer ancestry. A
             // same-user local process can reach the mode-0600 socket, so a
             // self-labelled provider field alone is not product-surface proof.
-            if process?.executionSurface == .claudeCodeCLI {
-                updated.claudeCode = true
+            switch process?.executionSurface {
+            case .claudeCodeCLI: updated.claudeCode = true
+            case .claudeCodeDesktop: updated.claudeDesktop = true
+            case .codexDesktop, .codexCLI, nil: break
             }
         case .cursor:
             return
@@ -2778,10 +2783,16 @@ final class AppState: ObservableObject {
         now: Date,
         states: [AgentSessionState]? = nil
     ) {
-        let summarized = CodexTaskSemanticStatus.summarize(
-            sessions: states ?? agentMachine.allTurns(at: now),
-            at: now
+        let sessions = states ?? agentMachine.allTurns(at: now)
+        let summarized = CodexTaskSemanticStatus.summarize(sessions: sessions, at: now)
+        let claudeSummary = CodexTaskSemanticStatus.summarize(
+            sessions: sessions,
+            at: now,
+            provider: .claudeCode
         )
+        if claudeSummary != claudeTaskSemanticStatus {
+            claudeTaskSemanticStatus = claudeSummary
+        }
         let summarizedIsIdle: Bool
         if case .idle = summarized {
             summarizedIsIdle = true

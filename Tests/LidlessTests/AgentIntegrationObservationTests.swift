@@ -11,7 +11,8 @@ final class AgentIntegrationObservationTests: XCTestCase {
             bridgeSchemaVersion: schema,
             codexDesktop: true,
             codexCLI: false,
-            claudeCode: true
+            claudeCode: true,
+            claudeDesktop: true
         )
 
         store.saveAgentIntegrationObservations(observed)
@@ -44,6 +45,27 @@ final class AgentIntegrationObservationTests: XCTestCase {
         XCTAssertEqual(
             store.loadAgentIntegrationObservations(bridgeSchemaVersion: schema),
             AgentIntegrationObservations(bridgeSchemaVersion: schema)
+        )
+    }
+
+    func testObservationsStoredBeforeClaudeDesktopKeepOtherSurfaces() throws {
+        let suite = "AgentIntegrationObservationLegacyTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let schema = HookBridgePayload.currentSchemaVersion
+        let legacy = #"{"bridgeSchemaVersion":\#(schema),"codexDesktop":true,"codexCLI":false,"claudeCode":true}"#
+        defaults.set(Data(legacy.utf8), forKey: "agentIntegrationObservations")
+
+        XCTAssertEqual(
+            SettingsStore(defaults: defaults)
+                .loadAgentIntegrationObservations(bridgeSchemaVersion: schema),
+            AgentIntegrationObservations(
+                bridgeSchemaVersion: schema,
+                codexDesktop: true,
+                codexCLI: false,
+                claudeCode: true,
+                claudeDesktop: false
+            )
         )
     }
 }
