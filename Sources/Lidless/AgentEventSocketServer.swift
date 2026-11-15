@@ -37,7 +37,7 @@ final class AgentEventSocketServer {
     )
     private var descriptor: Int32 = -1
     private var source: DispatchSourceRead?
-    private var eventHandler: ((Data, AgentProcessSnapshot?) -> Void)?
+    private var eventHandler: ((Data, [AgentProcessSnapshot]) -> Void)?
     /// Identity of the pathname created by this instance. During app relaunch,
     /// the new process deliberately replaces the old socket. The old process
     /// must not unlink that newer inode from its later `deinit`.
@@ -60,10 +60,14 @@ final class AgentEventSocketServer {
     }
 
     func start(onEventWithProcess: @escaping (Data, AgentProcessSnapshot?) -> Void) throws {
-        try startServer(onEventWithProcess)
+        try startServer { data, processes in onEventWithProcess(data, processes.first) }
     }
 
-    private func startServer(_ onEvent: @escaping (Data, AgentProcessSnapshot?) -> Void) throws {
+    func start(onEventWithProcesses: @escaping (Data, [AgentProcessSnapshot]) -> Void) throws {
+        try startServer(onEventWithProcesses)
+    }
+
+    private func startServer(_ onEvent: @escaping (Data, [AgentProcessSnapshot]) -> Void) throws {
         guard source == nil else { return }
         eventHandler = onEvent
 
@@ -177,9 +181,9 @@ final class AgentEventSocketServer {
                 )
             }
             let canReply = noSigPipeResult == 0
-            let process = Self.peerPID(for: client).flatMap {
-                AgentProcessMonitor.nearestAgentAncestor(of: $0)
-            }
+            let processes = Self.peerPID(for: client).map {
+                AgentProcessMonitor.agentAncestors(of: $0)
+            } ?? []
             clientQueue.async { [weak self] in
                 let payload = Self.readOneEvent(from: client)
                 guard let payload, let self else {
@@ -192,7 +196,7 @@ final class AgentEventSocketServer {
                 // complete frame cannot disappear merely because stop/deinit
                 // races this client queue; semantic decoding remains AppState's
                 // responsibility on the serial queue.
-                self.queue.async { [self] in self.eventHandler?(payload, process) }
+                self.queue.async { [self] in self.eventHandler?(payload, processes) }
                 if canReply { Self.sendReceipt(0x06, to: client) }
                 Darwin.close(client)
             }

@@ -10,6 +10,8 @@ private func providerFromArguments() -> HookProvider? {
     switch arguments[index + 1] {
     case "codex": return .codex
     case "claude": return .claudeCode
+    case "antigravity": return .antigravity
+    case "paseo": return .paseo
     default: return nil
     }
 }
@@ -103,14 +105,31 @@ private func sendWithLaunchFallback(
     }
 }
 
+private func emitProviderHookResultIfRequired(for provider: HookProvider, rawInput: Data?) {
+    guard provider == .antigravity else { return }
+    // Antigravity unmarshals hook stdout as its `HookResult`. `PreToolUse`
+    // requires an explicit decision (`{}` hard-denies the tool), so the
+    // response depends on the event; see `AntigravityHookResponse`.
+    let response = AntigravityHookResponse.stdout(forRawInput: rawInput)
+    _ = response.withUnsafeBytes { bytes in
+        Darwin.write(STDOUT_FILENO, bytes.baseAddress, bytes.count)
+    }
+}
+
 private func runBridge() {
     let startedAt = ProcessInfo.processInfo.systemUptime
     let deadline = startedAt + maximumRuntime
-    guard let provider = providerFromArguments(),
-          let input = readStandardInput(
-              limit: HookEventSanitizer.maximumInputBytes,
-              deadline: deadline
-          ),
+    guard let provider = providerFromArguments() else { return }
+
+    let input = readStandardInput(
+        limit: HookEventSanitizer.maximumInputBytes,
+        deadline: deadline
+    )
+    // Answer the host first: delivery to the app (and a possible cold launch)
+    // must never delay or decide the agent's own tool/permission flow.
+    emitProviderHookResultIfRequired(for: provider, rawInput: input)
+
+    guard let input,
           let payload = HookEventSanitizer.encodedPayload(from: input, provider: provider) else {
         return
     }

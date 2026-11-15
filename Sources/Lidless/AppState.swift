@@ -285,6 +285,8 @@ final class AppState: ObservableObject {
     @Published private(set) var codexProcessPresence: CodexProcessPresence?
     @Published private(set) var codexTaskSemanticStatus: CodexTaskSemanticStatus?
     @Published private(set) var claudeTaskSemanticStatus: CodexTaskSemanticStatus?
+    @Published private(set) var antigravityTaskSemanticStatus: CodexTaskSemanticStatus?
+    @Published private(set) var paseoTaskSemanticStatus: CodexTaskSemanticStatus?
 
     var codexSoftwareStatusText: String {
         let keyAndDefault: (String, String)
@@ -511,7 +513,9 @@ final class AppState: ObservableObject {
             ),
             isManualKeepAwakeActive: isManualKeepAwakeActive,
             codexStatus: codexTaskSemanticStatus,
-            claudeStatus: claudeTaskSemanticStatus
+            claudeStatus: claudeTaskSemanticStatus,
+            antigravityStatus: antigravityTaskSemanticStatus,
+            paseoStatus: paseoTaskSemanticStatus
         )
     }
 
@@ -1522,11 +1526,19 @@ final class AppState: ObservableObject {
     var codexCLIObserved: Bool { integrationObservations.codexCLI }
     var claudeCodeObserved: Bool { integrationObservations.claudeCode }
     var claudeDesktopObserved: Bool { integrationObservations.claudeDesktop }
+    var paseoObserved: Bool { integrationObservations.paseo }
+    var antigravityObserved: Bool { integrationObservations.antigravity }
     var allAgentSurfacesObserved: Bool {
-        codexDesktopObserved && codexCLIObserved && claudeCodeObserved
+        codexDesktopObserved
+            && codexCLIObserved
+            && claudeCodeObserved
+            && claudeDesktopObserved
+            && paseoObserved
+            && antigravityObserved
     }
 
     func refreshIntegrationHealth() {
+        repairAntigravityIntegrationIfNeeded()
         let installer = HookIntegrationInstaller()
         let codexHealth = installer.codexHealth()
         let health = [codexHealth.integration] + HookProvider.allCases
@@ -1547,7 +1559,7 @@ final class AppState: ObservableObject {
         if configurationHealthy, !eventServerAvailable {
             integrationSummary = "Event bridge unavailable"
         } else if integrationHealthy {
-            integrationSummary = "Codex hooks + completion relay + Claude hooks installed"
+            integrationSummary = "Codex, Claude, Paseo & Antigravity installed"
         } else if health.contains(where: { $0.state == .invalidConfiguration || $0.state == .conflict }) {
             integrationSummary = "Configuration needs manual repair"
         } else if health.contains(where: { $0.state == .bridgeMissing || $0.state == .needsRepair }) {
@@ -1559,11 +1571,37 @@ final class AppState: ObservableObject {
         }
     }
 
+    /// Builds up to 0.2.19 installed an Antigravity `PreToolUse` handler. Antigravity
+    /// treats that event as a permission gate, so the stale entry blocks every
+    /// tool call in every new Antigravity conversation until it is removed.
+    /// Repair CodeWake's own entry automatically (with the usual private
+    /// backup) instead of waiting for the user to find the repair button. Only
+    /// an already-installed, CodeWake-owned entry is touched: `notInstalled`
+    /// (user removed it), `conflict`, and invalid files are left alone. The
+    /// Paseo plugin is CodeWake-owned too and is refreshed the same way so an
+    /// app update reaches the running daemon without a manual repair.
+    private func repairAntigravityIntegrationIfNeeded() {
+        let installer = HookIntegrationInstaller()
+        if installer.health(for: .antigravity).state == .needsRepair {
+            _ = try? installer.install(.antigravity)
+        }
+        if installer.health(for: .paseo).state == .needsRepair,
+           let change = try? installer.install(.paseo),
+           change.configurationChanged {
+            DispatchQueue.global(qos: .utility).async {
+                HookIntegrationInstaller.syncRunningPaseoDaemonIfPresent(installed: true)
+            }
+        }
+    }
+
     func installAgentIntegrations() {
         do {
             let installer = HookIntegrationInstaller()
             for provider in HookProvider.allCases { _ = try installer.install(provider) }
             refreshIntegrationHealth()
+            DispatchQueue.global(qos: .utility).async {
+                HookIntegrationInstaller.syncRunningPaseoDaemonIfPresent(installed: true)
+            }
             lastError = "AI integrations installed. Restart Codex after this task so it loads the completion relay, then run one real turn in each supported surface."
         } catch {
             refreshIntegrationHealth()
@@ -1587,6 +1625,9 @@ final class AppState: ObservableObject {
             )
             store.clearAgentIntegrationObservations()
             refreshIntegrationHealth()
+            DispatchQueue.global(qos: .utility).async {
+                HookIntegrationInstaller.syncRunningPaseoDaemonIfPresent(installed: false)
+            }
             lastError = "CodeWake hooks and completion relay were removed; unrelated hooks and the prior notification command were preserved."
         } catch {
             refreshIntegrationHealth()
@@ -1790,6 +1831,8 @@ final class AppState: ObservableObject {
         // this bounded release cannot receive a reply.
         if terminateWhenFinished {
             scheduleNormalSleepRestoreQuitTimeout(generation: generation)
+        } else {
+            scheduleNormalSleepRestoreTimeout(generation: generation)
         }
 
         // Brightness recovery has its own durable journal and bounded fallback.
@@ -1888,6 +1931,26 @@ final class AppState: ObservableObject {
         }
     }
 
+    /// A non-quit restore must never leave `isRestoringNormalSleep` stuck
+    /// (which would silently ignore every later restore click and wake
+    /// request) if the brightness restore or helper reply never arrives.
+    private func scheduleNormalSleepRestoreTimeout(generation: Int) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 20) { [weak self] in
+            guard let self,
+                  self.isRestoringNormalSleep,
+                  !self.terminateAfterNormalSleepRestore,
+                  self.normalSleepRestoreGeneration == generation else { return }
+            // The brightness step may never have called back; make sure every
+            // local wake intent is cleared regardless.
+            self.prepareLocalNormalSleepRestore(at: Date())
+            self.finishNormalSleepRestore(
+                generation: generation,
+                status: .failed,
+                diagnostic: "Timed out waiting for the background helper during restore."
+            )
+        }
+    }
+
     private func prepareLocalNormalSleepRestore(at now: Date) {
         conditionalSleepRelease.cancel()
         stopDisplayAwakeAssertion()
@@ -1981,8 +2044,8 @@ final class AppState: ObservableObject {
 
     private func startAgentEventServer() {
         do {
-            try agentEventServer.start(onEventWithProcess: { [weak self] data, process in
-                Task { @MainActor in self?.receiveAgentEvent(data, process: process) }
+            try agentEventServer.start(onEventWithProcesses: { [weak self] data, processes in
+                Task { @MainActor in self?.receiveAgentEvent(data, processes: processes) }
             })
             eventServerAvailable = true
         } catch {
@@ -1998,7 +2061,8 @@ final class AppState: ObservableObject {
         }
     }
 
-    private func receiveAgentEvent(_ data: Data, process: AgentProcessSnapshot? = nil) {
+    private func receiveAgentEvent(_ data: Data, processes: [AgentProcessSnapshot] = []) {
+        let process = processes.first
         // Decode only the privacy-minimized bridge type, then construct the
         // richer internal event ourselves. In particular, socket clients cannot
         // inject `confirmed=true` or the process-exit fallback; those remain
@@ -2075,6 +2139,11 @@ final class AppState: ObservableObject {
         let key = AgentSessionKey(provider: provider, sessionID: payload.sessionID)
         if eventKind == .sessionEnded {
             agentProcessAssociations.remove(session: key)
+        } else if provider == .paseo {
+            for ancestor in processes.prefix(2) where processProvider(ancestor) == .paseo {
+                agentProcessAssociations.associate(ancestor.identity, with: key)
+                lastProcessSnapshots[ancestor.identity] = ancestor
+            }
         } else if let process, processProvider(process) == provider {
             agentProcessAssociations.associate(process.identity, with: key)
             lastProcessSnapshots[process.identity] = process
@@ -2439,6 +2508,8 @@ final class AppState: ObservableObject {
         switch snapshot.executionSurface.provider {
         case .codex: return .codex
         case .claude: return .claudeCode
+        case .paseo: return .paseo
+        case .antigravity: return .antigravity
         }
     }
 
@@ -2452,7 +2523,7 @@ final class AppState: ObservableObject {
             switch process?.executionSurface {
             case .codexDesktop: updated.codexDesktop = true
             case .codexCLI: updated.codexCLI = true
-            case .claudeCodeCLI, .claudeCodeDesktop, nil: break
+            case .claudeCodeCLI, .claudeCodeDesktop, .paseo, .antigravity, nil: break
             }
         case .claudeCode:
             // Runtime verification additionally requires peer ancestry. A
@@ -2461,7 +2532,15 @@ final class AppState: ObservableObject {
             switch process?.executionSurface {
             case .claudeCodeCLI: updated.claudeCode = true
             case .claudeCodeDesktop: updated.claudeDesktop = true
-            case .codexDesktop, .codexCLI, nil: break
+            case .codexDesktop, .codexCLI, .paseo, .antigravity, nil: break
+            }
+        case .paseo:
+            if process?.executionSurface == .paseo {
+                updated.paseo = true
+            }
+        case .antigravity:
+            if process?.executionSurface == .antigravity {
+                updated.antigravity = true
             }
         case .cursor:
             return
@@ -2494,6 +2573,12 @@ final class AppState: ObservableObject {
 
     private func agentTick() {
         let now = Date()
+        // Interrupted turns (no Stop hook) must not hold the Mac awake until
+        // the hard limit; end silent Working turns so wake releases by itself.
+        if !isRestoringNormalSleep {
+            agentMachine.expireIdleWorkingTurns(at: now)
+            agentMachine.pruneSettledTurns(at: now)
+        }
         reconcileAgentWake(now: now)
         schedulePeriodicCodexCancellationScan()
     }
@@ -2609,7 +2694,11 @@ final class AppState: ObservableObject {
     /// state only follows the ordinary aggregate lease until its policy-only
     /// release is confirmed, or explains which independent hold remains.
     private func prepareCodexCancellationPolicyReleaseNotice() {
-        consumedCompletionLabel = "Codex task cancelled"
+        prepareCancellationPolicyReleaseNotice(label: "Codex task cancelled")
+    }
+
+    private func prepareCancellationPolicyReleaseNotice(label: String) {
+        consumedCompletionLabel = label
         var blockers: Set<AgentSleepReleaseBlocker> = []
         let sources = wakeArbiter.decision.requestedSources
         if sources.contains(.manual) { blockers.insert(.manual) }
@@ -2619,7 +2708,7 @@ final class AppState: ObservableObject {
         consumedCompletionBlockers = blockers
         if blockers.isEmpty {
             consumedCompletionReleasePending = true
-            agentCompletionNotice = "Codex task cancelled · restoring system sleep"
+            agentCompletionNotice = "\(label) · restoring system sleep"
         } else {
             consumedCompletionReleasePending = false
             agentCompletionNotice = completionBlockerNotice(blockers)
@@ -2658,13 +2747,18 @@ final class AppState: ObservableObject {
         let stateByTurnKey = Dictionary(uniqueKeysWithValues: states.compactMap { state in
             state.turnKey.map { ($0, state) }
         })
-        let dispositions = previousAgentTurnKeys
-            .subtracting(currentAgentTurnKeys)
-            .compactMap {
+        let removedTurns = previousAgentTurnKeys.subtracting(currentAgentTurnKeys)
+        let dispositions = removedTurns.compactMap {
             stateByTurnKey[$0]?.effectiveTerminalDisposition(at: now)
         }
         if dispositions.contains(.cancelled) {
-            prepareCodexCancellationPolicyReleaseNotice()
+            let hasCancelledCodexTurn = removedTurns.contains { key in
+                key.provider == .codex
+                    && stateByTurnKey[key]?.effectiveTerminalDisposition(at: now) == .cancelled
+            }
+            prepareCancellationPolicyReleaseNotice(
+                label: hasCancelledCodexTurn ? "Codex task cancelled" : "CANCELLED"
+            )
         } else if dispositions.contains(.failed) {
             agentCompletionNotice = "FAILED · system sleep restored"
         } else if dispositions.contains(.hardLimit) {
@@ -2792,6 +2886,22 @@ final class AppState: ObservableObject {
         )
         if claudeSummary != claudeTaskSemanticStatus {
             claudeTaskSemanticStatus = claudeSummary
+        }
+        let antigravitySummary = CodexTaskSemanticStatus.summarize(
+            sessions: sessions,
+            at: now,
+            provider: .antigravity
+        )
+        if antigravitySummary != antigravityTaskSemanticStatus {
+            antigravityTaskSemanticStatus = antigravitySummary
+        }
+        let paseoSummary = CodexTaskSemanticStatus.summarize(
+            sessions: sessions,
+            at: now,
+            provider: .paseo
+        )
+        if paseoSummary != paseoTaskSemanticStatus {
+            paseoTaskSemanticStatus = paseoSummary
         }
         let summarizedIsIdle: Bool
         if case .idle = summarized {

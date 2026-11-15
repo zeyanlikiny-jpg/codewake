@@ -200,18 +200,23 @@ enum MenuBarIconPresentation: Equatable, Sendable {
         isKeepAwakeActive: Bool,
         isManualKeepAwakeActive: Bool,
         codexStatus: CodexTaskSemanticStatus?,
-        claudeStatus: CodexTaskSemanticStatus? = nil
+        claudeStatus: CodexTaskSemanticStatus? = nil,
+        antigravityStatus: CodexTaskSemanticStatus? = nil,
+        paseoStatus: CodexTaskSemanticStatus? = nil
     ) -> MenuBarIconPresentation {
         guard isKeepAwakeActive else { return .normal }
 
-        var claudeWorking = false
-        if let claudeStatus {
-            let details = claudeStatus.details
+        var nonCodexWorking = false
+        for status in [claudeStatus, antigravityStatus, paseoStatus] {
+            guard let status else { continue }
+            let details = status.details
             // Attention wins across providers, matching the Codex rule below.
             if details.waitingCount > 0 || details.finishingCount > 0 {
                 return .attention
             }
-            claudeWorking = details.workingCount > 0
+            if details.workingCount > 0 {
+                nonCodexWorking = true
+            }
         }
 
         if let codexStatus {
@@ -232,7 +237,7 @@ enum MenuBarIconPresentation: Equatable, Sendable {
             }
         }
 
-        if claudeWorking { return .working }
+        if nonCodexWorking { return .working }
         return isManualKeepAwakeActive ? .manualActive : .normal
     }
 }

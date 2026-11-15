@@ -38,6 +38,40 @@ final class AgentStateMachineTests: XCTestCase {
         XCTAssertEqual(try JSONDecoder().decode(AgentEvent.self, from: data), original)
     }
 
+    func testInterruptedTurnWithoutStopExpiresAfterIdleTimeout() {
+        var machine = AgentStateMachine()
+        machine.workingIdleTimeout = 60
+        machine.ingest(event(.promptSubmitted))
+        machine.ingest(event(.toolFinished, seconds: 30))
+        XCTAssertTrue(machine.expireIdleWorkingTurns(at: base.addingTimeInterval(89)).isEmpty)
+        XCTAssertEqual(machine.activeSessions(at: base.addingTimeInterval(89)).count, 1)
+        let expired = machine.expireIdleWorkingTurns(at: base.addingTimeInterval(90))
+        XCTAssertEqual(expired.count, 1)
+        XCTAssertTrue(machine.activeSessions(at: base.addingTimeInterval(90)).isEmpty)
+        let state = machine.allTurns(at: base.addingTimeInterval(90)).first
+        XCTAssertEqual(state?.phase, .finished)
+        XCTAssertEqual(state?.terminalDisposition, .cancelled)
+        XCTAssertFalse(state?.isConditionalSleepEligibleTerminal(at: base.addingTimeInterval(90)) ?? true)
+
+        // A genuine later tool event resumes the same turn.
+        machine.ingest(event(.toolStarted, seconds: 120))
+        XCTAssertEqual(machine.activeSessions(at: base.addingTimeInterval(120)).count, 1)
+    }
+
+    func testIdleExpiryIgnoresBackgroundWorkAndCanBeDisabled() {
+        var machine = AgentStateMachine()
+        machine.workingIdleTimeout = 60
+        machine.ingest(event(.promptSubmitted))
+        machine.ingest(event(.backgroundWorkChanged, seconds: 1, background: true,
+                             workToken: tokenA))
+        XCTAssertTrue(machine.expireIdleWorkingTurns(at: base.addingTimeInterval(600)).isEmpty)
+
+        var disabled = AgentStateMachine()
+        disabled.workingIdleTimeout = 0
+        disabled.ingest(event(.promptSubmitted))
+        XCTAssertTrue(disabled.expireIdleWorkingTurns(at: base.addingTimeInterval(3_600)).isEmpty)
+    }
+
     func testDiscoveryAloneDoesNotWake() {
         var machine = AgentStateMachine()
         machine.ingest(event(.sessionStarted, turn: nil))
@@ -1753,5 +1787,98 @@ final class AgentStateMachineTests: XCTestCase {
         XCTAssertEqual(state.turnID, "legacy-turn")
         XCTAssertEqual(state.turnRole, .primary)
         XCTAssertEqual(restored.activeSessions(at: base.addingTimeInterval(1)).count, 1)
+    }
+}
+
+// MARK: - Regression tests for lifecycle holes found in review
+
+extension AgentStateMachineTests {
+    private func waiting(_ reason: AgentWaitingReason, seconds: TimeInterval) -> AgentEvent {
+        AgentEvent(provider: .codex,
+                   sessionID: "session-1",
+                   turnID: "turn-1",
+                   eventKind: .waitingForInput,
+                   waitingReason: reason,
+                   timestamp: base.addingTimeInterval(seconds))
+    }
+
+    func testApprovedPermissionResumesWorkingWhenTheApprovedToolFinishes() {
+        var machine = AgentStateMachine(maximumTurnDuration: 4 * 60 * 60,
+                                        completionConfirmation: 5,
+                                        waitingGrace: 60)
+        machine.ingest(event(.promptSubmitted))
+        machine.ingest(event(.toolStarted, seconds: 1))
+        machine.ingest(waiting(.permission, seconds: 2))
+        XCTAssertEqual(machine.allTurns(at: base.addingTimeInterval(3)).first?.phase,
+                       .waitingForInput)
+
+        // No hook fires on approval; the approved tool's PostToolUse is the
+        // first proof the agent is working again.
+        XCTAssertEqual(machine.ingest(event(.toolFinished, seconds: 30)), .accepted)
+        let state = machine.allTurns(at: base.addingTimeInterval(200)).first
+        XCTAssertEqual(state?.phase, .working)
+        XCTAssertNil(state?.waitingReason)
+        XCTAssertEqual(machine.activeSessions(at: base.addingTimeInterval(200)).count, 1)
+    }
+
+    func testToolFinishedDoesNotEndANonPermissionWait() {
+        var machine = AgentStateMachine()
+        machine.ingest(event(.promptSubmitted))
+        machine.ingest(waiting(.userInput, seconds: 2))
+        XCTAssertEqual(machine.ingest(event(.toolFinished, seconds: 3)), .duplicate)
+        XCTAssertEqual(machine.allTurns(at: base.addingTimeInterval(4)).first?.phase,
+                       .waitingForInput)
+    }
+
+    func testNewPromptSupersedesTurnHoldingSessionWideBackgroundCount() {
+        var machine = AgentStateMachine()
+        machine.ingest(event(.promptSubmitted, turn: "A"))
+        // Claude Stop with one background shell: turn A keeps Working.
+        machine.ingest(event(.turnCompleted, turn: "A", seconds: 10,
+                             background: true, backgroundCount: 1))
+        XCTAssertEqual(machine.allTurns(at: base.addingTimeInterval(11)).count, 1)
+
+        machine.ingest(event(.promptSubmitted, turn: "B", seconds: 20))
+        machine.ingest(event(.turnCompleted, turn: "B", seconds: 30,
+                             background: false, backgroundCount: 0))
+        let later = base.addingTimeInterval(60)
+        XCTAssertTrue(machine.activeSessions(at: later).isEmpty,
+                      "the stranded count on turn A must not hold the wake")
+        XCTAssertFalse(machine.allTurns(at: later).contains { $0.turnID == "A" })
+    }
+
+    func testNewPromptKeepsTurnWithTokenizedSubagentWork() {
+        var machine = AgentStateMachine()
+        machine.ingest(event(.promptSubmitted, turn: "A"))
+        machine.ingest(event(.backgroundWorkChanged, turn: "A", seconds: 1,
+                             background: true, workToken: tokenA))
+        machine.ingest(event(.promptSubmitted, turn: "B", seconds: 20))
+        XCTAssertTrue(machine.allTurns(at: base.addingTimeInterval(21))
+            .contains { $0.turnID == "A" })
+    }
+
+    func testSettledTurnsArePrunedIntoTombstonesAfterRetention() {
+        var machine = AgentStateMachine()
+        machine.ingest(event(.promptSubmitted))
+        machine.ingest(event(.turnCompleted, seconds: 10, background: false, backgroundCount: 0))
+        let soon = base.addingTimeInterval(3_600)
+        XCTAssertEqual(machine.pruneSettledTurns(at: soon), 0)
+        XCTAssertEqual(machine.allTurns(at: soon).count, 1)
+
+        let late = base.addingTimeInterval(AgentStateMachine.settledTurnRetention + 3_600)
+        XCTAssertEqual(machine.pruneSettledTurns(at: late), 1)
+        XCTAssertTrue(machine.allTurns(at: late).isEmpty)
+        // The tombstone still stops a very late duplicate from resurrecting it.
+        XCTAssertEqual(machine.ingest(event(.toolStarted, seconds: AgentStateMachine.settledTurnRetention + 3_601)),
+                       .tombstoned)
+    }
+
+    func testPruningNeverTouchesWorkingTurns() {
+        var machine = AgentStateMachine()
+        machine.workingIdleTimeout = 0
+        machine.ingest(event(.promptSubmitted))
+        let late = base.addingTimeInterval(AgentStateMachine.settledTurnRetention + 60)
+        XCTAssertEqual(machine.pruneSettledTurns(at: late.addingTimeInterval(-3 * 60 * 60)), 0)
+        XCTAssertEqual(machine.allTurns(at: base.addingTimeInterval(1)).count, 1)
     }
 }

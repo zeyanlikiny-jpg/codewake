@@ -133,6 +133,11 @@ struct SettingsView: View {
                         "Claude Desktop",
                         observed: state.claudeDesktopObserved
                     )
+                    integrationObservation("Paseo", observed: state.paseoObserved)
+                    integrationObservation(
+                        "Antigravity",
+                        observed: state.antigravityObserved
+                    )
                 }
 
                 VStack(alignment: .leading, spacing: 6) {

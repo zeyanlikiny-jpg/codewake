@@ -742,7 +742,7 @@ final class LocalizationTests: XCTestCase {
     }
 
     func testPresentationLocalizerPreservesKnownBrandNamesThatMatchTheirKeys() {
-        for brand in ["Codex", "Claude Code", "Cursor"] {
+        for brand in ["Codex", "Claude Code", "Cursor", "Paseo", "Antigravity"] {
             XCTAssertEqual(
                 PresentationLocalizer.string(
                     brand,
@@ -792,6 +792,30 @@ final class LocalizationTests: XCTestCase {
                 bundle: resourceBundle
             ),
             "Codex、Claude Code"
+        )
+        XCTAssertEqual(
+            PresentationLocalizer.string(
+                "Codex, Paseo, Antigravity",
+                language: .simplifiedChinese,
+                bundle: resourceBundle
+            ),
+            "Codex、Paseo、Antigravity"
+        )
+        XCTAssertEqual(
+            PresentationLocalizer.string(
+                "CANCELLED · system sleep restored",
+                language: .simplifiedChinese,
+                bundle: resourceBundle
+            ),
+            "已取消 · 已恢复系统睡眠"
+        )
+        XCTAssertEqual(
+            PresentationLocalizer.string(
+                "Codex, Claude, Paseo & Antigravity installed",
+                language: .simplifiedChinese,
+                bundle: resourceBundle
+            ),
+            "已安装 Codex、Claude、Paseo 与 Antigravity 集成"
         )
         XCTAssertEqual(
             PresentationLocalizer.string(

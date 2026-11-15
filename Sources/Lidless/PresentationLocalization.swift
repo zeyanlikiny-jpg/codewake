@@ -231,7 +231,7 @@ enum PresentationLocalizer {
         let wakeParts = canonical.components(separatedBy: ", ")
         let knownWakeLabels: Set<String> = [
             "Manual hold", "Manual timer", "Charging hold", "External/system",
-            "Codex", "Claude Code", "Cursor"
+            "Codex", "Claude Code", "Cursor", "Paseo", "Antigravity"
         ]
         if wakeParts.count > 1, wakeParts.allSatisfy(knownWakeLabels.contains) {
             let separator = language == .simplifiedChinese ? "、" : ", "

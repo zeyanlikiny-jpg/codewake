@@ -36,9 +36,10 @@ own Apple Developer signing identity for local use; see
   system keep-awake rules continue to apply. The screen-on preference is only
   suspended until wake, and an existing built-in brightness blackout is restored
   before sending the request. Failed or unconfirmed requests show a menu warning.
-- Detects Codex Desktop, Codex CLI, Claude Code CLI, and the Code tab in
-  Claude Desktop using lifecycle hooks. Opening Claude Desktop or an idle Code
-  session alone does not create a keep-awake request. Codex's
+- Detects Codex Desktop, Codex CLI, Claude Code CLI, the Code tab in
+  Claude Desktop, Paseo, and Antigravity using lifecycle hooks. Opening Claude
+  Desktop or an idle Code session alone does not create a keep-awake request.
+  Codex's
   `agent-turn-complete` notification supplies the structured plan-complete
   boundary that the plan approval card needs.
 - Acquires a keep-awake lease while an agent is working. A successful final
@@ -62,6 +63,15 @@ structurally merges its handlers into these files:
 - Codex Desktop and CLI: `~/.codex/hooks.json`
 - Codex turn-complete relay: `~/.codex/config.toml`
 - Claude Code: `~/.claude/settings.json`
+- Antigravity: `~/.gemini/config/hooks.json` (lifecycle events only:
+  `SessionStart`, `PreInvocation`, `PostToolUse`, `PostInvocation`, `Stop`)
+- Paseo: `~/.paseo/config.json`, which enables CodeWake's own daemon plugin in
+  `~/Library/Application Support/Lidless AI/paseo-plugin/`
+
+CodeWake never installs a `PreToolUse` gate for Antigravity: Antigravity treats
+that event's output as a permission decision, so an observer hook there could
+block tool calls. Builds up to 0.2.19 installed one; 0.2.20 removes it
+automatically on launch.
 
 It validates each complete configuration before writing, preserves unknown
 settings and third-party handlers, creates a backup before each change, is
@@ -103,8 +113,8 @@ keep-awake state unchanged. This compatibility fallback can be replaced by an
 official cancellation hook when one becomes available.
 
 The Settings window reports hook configuration separately from real runtime
-proof. Codex Desktop, Codex CLI, Claude Code CLI, and Claude Desktop are each
-marked observed only after a current-schema event arrives with matching local
+proof. Codex Desktop, Codex CLI, Claude Code CLI, Claude Desktop, Paseo, and
+Antigravity are each marked observed only after a current-schema event arrives with matching local
 process ancestry. Claude Desktop support applies to its bundled Claude Code
 runtime in the Code tab; ordinary Claude chats do not create wake requests.
 The menu-bar icon also reflects Claude working, waiting, and finishing states,

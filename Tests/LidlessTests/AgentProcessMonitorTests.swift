@@ -98,8 +98,89 @@ final class AgentProcessMonitorTests: XCTestCase {
     func testDesktopSurfacesNeverCreateStandaloneDiscovery() {
         XCTAssertFalse(AgentExecutionSurface.codexDesktop.supportsStandaloneDiscovery)
         XCTAssertFalse(AgentExecutionSurface.claudeCodeDesktop.supportsStandaloneDiscovery)
+        XCTAssertFalse(AgentExecutionSurface.paseo.supportsStandaloneDiscovery)
+        XCTAssertFalse(AgentExecutionSurface.antigravity.supportsStandaloneDiscovery)
         XCTAssertTrue(AgentExecutionSurface.claudeCodeCLI.supportsStandaloneDiscovery)
         XCTAssertEqual(AgentExecutionSurface.claudeCodeDesktop.provider, .claude)
+        XCTAssertEqual(AgentExecutionSurface.paseo.provider, .paseo)
+        XCTAssertEqual(AgentExecutionSurface.antigravity.provider, .antigravity)
+    }
+
+    func testPaseoAndAntigravityExecutionSurfacesRejectUnrelatedProcesses() {
+        // Antigravity main app, bundled language_server, and agy CLI are recognized.
+        XCTAssertEqual(
+            AgentProcessProvider.executionSurface(
+                executableName: "Antigravity",
+                executablePath: "/Applications/Antigravity.app/Contents/MacOS/Antigravity",
+                parentExecutablePath: "/sbin/launchd"
+            ),
+            .antigravity
+        )
+        XCTAssertEqual(
+            AgentProcessProvider.executionSurface(
+                executableName: "language_server",
+                executablePath: "/Applications/Antigravity.app/Contents/Resources/bin/language_server",
+                parentExecutablePath: "/Applications/Antigravity.app/Contents/MacOS/Antigravity"
+            ),
+            .antigravity
+        )
+        XCTAssertEqual(
+            AgentProcessProvider.executionSurface(
+                executableName: "agy",
+                executablePath: "/opt/homebrew/bin/agy",
+                parentExecutablePath: "/bin/zsh"
+            ),
+            .antigravity
+        )
+        // Unrelated LSPs named `language_server` and Renderer helpers are rejected.
+        XCTAssertNil(
+            AgentProcessProvider.executionSurface(
+                executableName: "language_server",
+                executablePath: "/opt/homebrew/bin/language_server",
+                parentExecutablePath: "/bin/zsh"
+            )
+        )
+        XCTAssertNil(AgentProcessProvider.detect(executableName: "Antigravity Helper (Renderer)"))
+
+        // Paseo app, Paseo Helper (daemon/supervisor/plugin worker), and CLI are recognized.
+        XCTAssertEqual(
+            AgentProcessProvider.executionSurface(
+                executableName: "Paseo",
+                executablePath: "/Applications/Paseo.app/Contents/MacOS/Paseo",
+                parentExecutablePath: "/sbin/launchd"
+            ),
+            .paseo
+        )
+        XCTAssertEqual(
+            AgentProcessProvider.executionSurface(
+                executableName: "Paseo Helper",
+                executablePath: "/Applications/Paseo.app/Contents/Frameworks/Paseo Helper.app/Contents/MacOS/Paseo Helper",
+                parentExecutablePath: "/Applications/Paseo.app/Contents/MacOS/Paseo"
+            ),
+            .paseo
+        )
+        XCTAssertEqual(
+            AgentProcessProvider.executionSurface(
+                executableName: "paseo",
+                executablePath: "/usr/local/bin/paseo",
+                parentExecutablePath: "/bin/zsh"
+            ),
+            .paseo
+        )
+        // Electron renderer helpers and Paseo Helper outside Paseo.app are rejected.
+        XCTAssertNil(AgentProcessProvider.detect(executableName: "Paseo Helper (Renderer)"))
+        XCTAssertNil(
+            AgentProcessProvider.executionSurface(
+                executableName: "Paseo Helper",
+                executablePath: "/Applications/Other.app/Contents/Frameworks/Paseo Helper.app/Contents/MacOS/Paseo Helper",
+                parentExecutablePath: "/Applications/Other.app/Contents/MacOS/Other"
+            )
+        )
+
+        XCTAssertEqual(
+            scan(surfaces: [.paseo, .antigravity]).codexPresence,
+            .notDetected
+        )
     }
 
     func testCodexPresenceDistinguishesDesktopCLIAndBoth() {

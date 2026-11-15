@@ -4,12 +4,16 @@ import Foundation
 enum HookProvider: String, CaseIterable, Codable {
     case codex
     case claudeCode
+    case antigravity
+    case paseo
 
     /// Stable value passed to the bridge executable and emitted on the socket.
     var wireName: String {
         switch self {
         case .codex: return "codex"
         case .claudeCode: return "claude"
+        case .antigravity: return "antigravity"
+        case .paseo: return "paseo"
         }
     }
 
@@ -17,27 +21,77 @@ enum HookProvider: String, CaseIterable, Codable {
         switch self {
         case .codex: return [".codex", "hooks.json"]
         case .claudeCode: return [".claude", "settings.json"]
+        case .antigravity: return [".gemini", "config", "hooks.json"]
+        case .paseo: return [".paseo", "config.json"]
         }
     }
 
-    /// Events shared by the official Codex and Claude Code command-hook
-    /// protocols. Claude Code additionally reports API-level failures.
+    /// Lifecycle events installed or emitted for each supported provider.
     var installedEvents: [String] {
-        var events = [
-            "SessionStart",
-            "UserPromptSubmit",
-            "PreToolUse",
-            "PostToolUse",
-            "PermissionRequest",
-            "Stop",
-            "SubagentStart",
-            "SubagentStop",
-            "SessionEnd",
-        ]
-        if self == .claudeCode {
-            events.append(contentsOf: ["PostToolUseFailure", "Notification", "StopFailure"])
+        switch self {
+        case .codex:
+            return [
+                "SessionStart",
+                "UserPromptSubmit",
+                "PreToolUse",
+                "PostToolUse",
+                "PermissionRequest",
+                "Stop",
+                "SubagentStart",
+                "SubagentStop",
+                "SessionEnd",
+            ]
+        case .claudeCode:
+            return [
+                "SessionStart",
+                "UserPromptSubmit",
+                "PreToolUse",
+                "PostToolUse",
+                "PermissionRequest",
+                "Stop",
+                "SubagentStart",
+                "SubagentStop",
+                "SessionEnd",
+                "PostToolUseFailure",
+                "Notification",
+                "StopFailure",
+            ]
+        case .antigravity:
+            // `PreToolUse` is deliberately NOT installed. Antigravity treats it
+            // as a permission gate whose `decision` field is required: a
+            // passive observer that prints `{}` is parsed as an empty decision
+            // and hard-denies every tool call. CodeWake must never gate tools,
+            // so tool activity is observed through `PostToolUse` and the
+            // invocation/stop lifecycle instead.
+            return [
+                "SessionStart",
+                "PreInvocation",
+                "PostInvocation",
+                "PostToolUse",
+                "Stop",
+            ]
+        case .paseo:
+            return [
+                "agent.create.after",
+                "agent.turn.before",
+                "agent.turn.after",
+                "agent.permission.before",
+                "agent.permission.after",
+                "agent.close.after",
+                "agent.archive.after",
+            ]
         }
-        return events
+    }
+
+    /// Events the bridge still understands. This is a superset of
+    /// `installedEvents` so an older Antigravity configuration that still
+    /// carries CodeWake's `PreToolUse` handler keeps reporting work (and gets a
+    /// non-blocking response) until the app repairs it.
+    var acceptedEvents: [String] {
+        switch self {
+        case .antigravity: return installedEvents + ["PreToolUse"]
+        case .codex, .claudeCode, .paseo: return installedEvents
+        }
     }
 
     func configurationURL(homeDirectory: URL) -> URL {
@@ -149,6 +203,9 @@ enum HookIntegrationError: LocalizedError, Equatable {
 enum HookIntegrationPaths {
     static let applicationSupportDirectoryName = "Lidless AI"
     static let bridgeExecutableName = "LidlessAIHookBridge"
+    static let antigravityHookEntryName = "codewake"
+    static let paseoPluginIdentifier = "codewake"
+    static let paseoPluginDirectoryName = "paseo-plugin"
     static let releaseAppBundleIdentifier = "com.kenny.lidlessai"
     static let developmentAppBundleIdentifier = "com.kenny.lidlessai.dev"
 
@@ -170,6 +227,179 @@ enum HookIntegrationPaths {
     static func bridgeURL(homeDirectory: URL) -> URL {
         binDirectory(homeDirectory: homeDirectory)
             .appendingPathComponent(bridgeExecutableName, isDirectory: false)
+    }
+
+    static func paseoPluginDirectory(homeDirectory: URL) -> URL {
+        applicationSupportDirectory(homeDirectory: homeDirectory)
+            .appendingPathComponent(paseoPluginDirectoryName, isDirectory: true)
+    }
+
+    static func paseoPluginManifestURL(homeDirectory: URL) -> URL {
+        paseoPluginDirectory(homeDirectory: homeDirectory)
+            .appendingPathComponent("paseo-plugin.json", isDirectory: false)
+    }
+
+    static func paseoPluginServerEntryURL(homeDirectory: URL) -> URL {
+        paseoPluginDirectory(homeDirectory: homeDirectory)
+            .appendingPathComponent("index.server.ts", isDirectory: false)
+    }
+
+    static func paseoPluginManifestData() -> Data {
+        Data(
+            """
+            {
+              "description": "Privacy-minimized lifecycle wake bridge for CodeWake",
+              "id": "\(paseoPluginIdentifier)",
+              "name": "CodeWake",
+              "requirements": {
+                "paseo": ">=0.9.0"
+              }
+            }
+
+            """.utf8
+        )
+    }
+
+    static func paseoPluginServerEntryData(
+        homeDirectory: URL,
+        appBundleIdentifier: String = releaseAppBundleIdentifier
+    ) -> Data {
+        let bundleID = normalizedAppBundleIdentifier(appBundleIdentifier)
+        let bridgePath = jsonStringLiteral(bridgeURL(homeDirectory: homeDirectory).path)
+        let socketPath = jsonStringLiteral(
+            socketURL(homeDirectory: homeDirectory, appBundleIdentifier: bundleID).path
+        )
+        let bundleLiteral = jsonStringLiteral(bundleID)
+        let script = """
+        import { spawn } from "node:child_process";
+
+        const BRIDGE_PATH = \(bridgePath);
+        const APP_BUNDLE_ID = \(bundleLiteral);
+        const SOCKET_PATH = \(socketPath);
+
+        // Every hook spawns its own bridge process, so delivery order is not
+        // emission order (Paseo emits turn.before/turn.after back to back for
+        // instant turns). Stamp here, strictly increasing, so the app can order
+        // the lifecycle correctly.
+        let lastEmittedAt = 0;
+
+        function emitLifecycleEvent(payload: Record<string, unknown>): void {
+          try {
+            const emittedAt = Math.max(Date.now() / 1000, lastEmittedAt + 0.000001);
+            lastEmittedAt = emittedAt;
+            const child = spawn(BRIDGE_PATH, ["--provider", "paseo"], {
+              env: {
+                ...process.env,
+                LIDLESS_AI_APP_BUNDLE_ID: APP_BUNDLE_ID,
+                LIDLESS_AI_SOCKET_PATH: SOCKET_PATH,
+              },
+              stdio: ["pipe", "ignore", "ignore"],
+            });
+            child.on("error", () => {});
+            child.stdin.on("error", () => {});
+            child.stdin.end(JSON.stringify({ ...payload, emitted_at: emittedAt }));
+            child.unref();
+          } catch {
+            // Hook delivery is best-effort and must never disrupt Paseo turns.
+          }
+        }
+
+        export default function contribute(server: any): () => void {
+          if (!server || typeof server.addHook !== "function") {
+            return () => {};
+          }
+          const disposers = [
+            server.addHook("agent.create.after", (event: any) => {
+              if (typeof event?.agent?.id === "string") {
+                emitLifecycleEvent({
+                  session_id: event.agent.id,
+                  hook_event_name: "agent.create.after",
+                });
+              }
+            }),
+            server.addHook("agent.turn.before", (event: any) => {
+              if (typeof event?.agent?.id === "string") {
+                emitLifecycleEvent({
+                  session_id: event.agent.id,
+                  turn_id: typeof event.turnId === "string" ? event.turnId : undefined,
+                  hook_event_name: "agent.turn.before",
+                });
+              }
+            }),
+            server.addHook("agent.turn.after", (event: any) => {
+              if (typeof event?.agent?.id === "string") {
+                const outcomeKind = typeof event?.outcome === "string"
+                  ? event.outcome
+                  : (typeof event?.outcome?.kind === "string" ? event.outcome.kind : "completed");
+                emitLifecycleEvent({
+                  session_id: event.agent.id,
+                  turn_id: typeof event.turnId === "string" ? event.turnId : undefined,
+                  hook_event_name: "agent.turn.after",
+                  outcome_kind: outcomeKind,
+                });
+              }
+            }),
+            server.addHook("agent.permission.before", (event: any) => {
+              if (typeof event?.agent?.id === "string") {
+                emitLifecycleEvent({
+                  session_id: event.agent.id,
+                  turn_id: typeof event.turnId === "string" ? event.turnId : undefined,
+                  hook_event_name: "agent.permission.before",
+                });
+              }
+            }),
+            server.addHook("agent.permission.after", (event: any) => {
+              if (typeof event?.agent?.id === "string") {
+                emitLifecycleEvent({
+                  session_id: event.agent.id,
+                  turn_id: typeof event.turnId === "string" ? event.turnId : undefined,
+                  hook_event_name: "agent.permission.after",
+                });
+              }
+            }),
+            server.addHook("agent.close.after", (event: any) => {
+              if (typeof event?.agent?.id === "string") {
+                emitLifecycleEvent({
+                  session_id: event.agent.id,
+                  hook_event_name: "agent.close.after",
+                });
+              }
+            }),
+            server.addHook("agent.archive.after", (event: any) => {
+              if (typeof event?.agent?.id === "string") {
+                emitLifecycleEvent({
+                  session_id: event.agent.id,
+                  hook_event_name: "agent.archive.after",
+                });
+              }
+            }),
+          ];
+          return () => {
+            for (const dispose of disposers) {
+              if (typeof dispose === "function") {
+                dispose();
+              }
+            }
+          };
+        }
+
+        """
+        return Data(script.utf8)
+    }
+
+    private static func jsonStringLiteral(_ value: String) -> String {
+        guard let encoded = try? JSONSerialization.data(
+            withJSONObject: [value],
+            options: [.withoutEscapingSlashes]
+        ),
+              let arrayText = String(data: encoded, encoding: .utf8),
+              arrayText.count >= 2 else {
+            let escaped = value
+                .replacingOccurrences(of: "\\", with: "\\\\")
+                .replacingOccurrences(of: "\"", with: "\\\"")
+            return "\"\(escaped)\""
+        }
+        return String(arrayText.dropFirst().dropLast())
     }
 
     static func codexConfigurationURL(homeDirectory: URL) -> URL {

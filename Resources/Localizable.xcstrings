@@ -1,6 +1,86 @@
 {
   "sourceLanguage": "en",
   "strings": {
+    "Antigravity": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antigravity"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Antigravity"
+          }
+        }
+      }
+    },
+    "Paseo": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paseo"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paseo"
+          }
+        }
+      }
+    },
+    "CANCELLED": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CANCELLED"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已取消"
+          }
+        }
+      }
+    },
+    "Codex, Claude, Paseo & Antigravity installed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Codex, Claude, Paseo & Antigravity installed"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已安装 Codex、Claude、Paseo 与 Antigravity 集成"
+          }
+        }
+      }
+    },
+    "Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, Claude Code CLI, Claude Desktop, Paseo, and Antigravity. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, Claude Code CLI, Claude Desktop, Paseo, and Antigravity. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装由 Codex Desktop、Codex CLI、Claude Code CLI、Claude Desktop、Paseo 和 Antigravity 共用的隐私最小化生命周期集成。它们仅发送不透明 ID/令牌、事件类型、后台工作数量和时间，绝不会发送提示词、回答、路径、命令或源代码。"
+          }
+        }
+      }
+    },
     "Double-click to turn off the built-in display." : {
       "localizations" : {
         "en" : {

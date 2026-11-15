@@ -74,10 +74,14 @@ final class HookIntegrationInstaller {
             state = HookConfigurationEditor.health(
                 of: snapshot.data,
                 provider: provider,
-                appBundleIdentifier: appBundleIdentifier
+                appBundleIdentifier: appBundleIdentifier,
+                homeDirectory: homeDirectory
             )
         } catch {
             state = .invalidConfiguration
+        }
+        if provider == .paseo, state == .installed {
+            state = paseoPluginFilesHealth()
         }
         if state == .installed {
             if !isExecutableRegularFile(at: bridgeURL) {
@@ -161,8 +165,12 @@ final class HookIntegrationInstaller {
         let edit = try HookConfigurationEditor.installing(
             in: original.data,
             provider: provider,
-            appBundleIdentifier: appBundleIdentifier
+            appBundleIdentifier: appBundleIdentifier,
+            homeDirectory: homeDirectory
         )
+        let paseoPluginNeedsWrite = try provider == .paseo
+            ? preflightPaseoPluginInstall()
+            : false
         let notifyConfigurationURL = HookIntegrationPaths.codexConfigurationURL(
             homeDirectory: homeDirectory
         )
@@ -205,6 +213,9 @@ final class HookIntegrationInstaller {
         if shouldInstallBridge {
             try installBridge(from: bridgeSourceURL)
         }
+        if paseoPluginNeedsWrite {
+            try installPaseoPluginFiles()
+        }
         if edit.changed {
             try validateConfigurationDestination(configurationURL, matches: original)
             try writeConfiguration(
@@ -223,7 +234,7 @@ final class HookIntegrationInstaller {
 
         return HookIntegrationChange(
             provider: provider,
-            configurationChanged: edit.changed,
+            configurationChanged: edit.changed || paseoPluginNeedsWrite,
             bridgeChanged: shouldInstallBridge,
             backupURL: backupURL,
             notifyConfigurationChanged: notifyEdit?.changed == true,
@@ -238,8 +249,12 @@ final class HookIntegrationInstaller {
         let edit = try HookConfigurationEditor.uninstalling(
             from: original.data,
             provider: provider,
-            appBundleIdentifier: appBundleIdentifier
+            appBundleIdentifier: appBundleIdentifier,
+            homeDirectory: homeDirectory
         )
+        if provider == .paseo {
+            try preflightPaseoPluginUninstall()
+        }
         let notifyConfigurationURL = HookIntegrationPaths.codexConfigurationURL(
             homeDirectory: homeDirectory
         )
@@ -293,11 +308,14 @@ final class HookIntegrationInstaller {
                 replacing: notifyOriginal
             )
         }
+        let paseoPluginRemoved = try provider == .paseo
+            ? removePaseoPluginFilesIfPresent()
+            : false
 
         let bridgeRemoved = try removeBridgeIfUnused()
         return HookIntegrationChange(
             provider: provider,
-            configurationChanged: edit.changed,
+            configurationChanged: edit.changed || paseoPluginRemoved,
             bridgeChanged: bridgeRemoved,
             backupURL: backupURL,
             notifyConfigurationChanged: notifyEdit?.changed == true,
@@ -677,7 +695,8 @@ final class HookIntegrationInstaller {
             switch HookConfigurationEditor.health(
                 of: snapshot.data,
                 provider: provider,
-                appBundleIdentifier: appBundleIdentifier
+                appBundleIdentifier: appBundleIdentifier,
+                homeDirectory: homeDirectory
             ) {
             case .installed, .needsRepair, .bridgeMissing, .invalidConfiguration, .conflict:
                 return false
@@ -702,6 +721,295 @@ final class HookIntegrationInstaller {
         guard isRegularFile(at: bridgeURL) else { return false }
         try fileManager.removeItem(at: bridgeURL)
         return true
+    }
+
+    // MARK: Paseo Managed Plugin Files & Live Daemon Sync
+
+    private func paseoPluginFilesHealth() -> HookIntegrationHealthState {
+        let directory = HookIntegrationPaths.paseoPluginDirectory(homeDirectory: homeDirectory)
+        var dirInfo = stat()
+        guard lstat(directory.path, &dirInfo) == 0 else {
+            return errno == ENOENT ? .needsRepair : .invalidConfiguration
+        }
+        guard (dirInfo.st_mode & S_IFMT) == S_IFDIR else {
+            return .invalidConfiguration
+        }
+
+        let manifestURL = HookIntegrationPaths.paseoPluginManifestURL(homeDirectory: homeDirectory)
+        let entryURL = HookIntegrationPaths.paseoPluginServerEntryURL(homeDirectory: homeDirectory)
+        let manifestSnapshot: HookConfigurationSnapshot
+        let entrySnapshot: HookConfigurationSnapshot
+        do {
+            manifestSnapshot = try configurationSnapshot(at: manifestURL)
+            entrySnapshot = try configurationSnapshot(at: entryURL)
+        } catch {
+            return .invalidConfiguration
+        }
+
+        if let entryData = entrySnapshot.data,
+           paseoPluginEntryBelongsToOtherAppBundle(entryData) {
+            return .conflict
+        }
+
+        let expectedManifest = HookIntegrationPaths.paseoPluginManifestData()
+        let expectedEntry = HookIntegrationPaths.paseoPluginServerEntryData(
+            homeDirectory: homeDirectory,
+            appBundleIdentifier: appBundleIdentifier
+        )
+        guard manifestSnapshot.data == expectedManifest,
+              entrySnapshot.data == expectedEntry else {
+            return .needsRepair
+        }
+        return .installed
+    }
+
+    private func preflightPaseoPluginInstall() throws -> Bool {
+        let directory = HookIntegrationPaths.paseoPluginDirectory(homeDirectory: homeDirectory)
+        var dirInfo = stat()
+        if lstat(directory.path, &dirInfo) == 0 {
+            guard (dirInfo.st_mode & S_IFMT) == S_IFDIR else {
+                throw HookIntegrationError.unsafeConfigurationFile
+            }
+        } else if errno != ENOENT {
+            throw HookIntegrationError.configurationReadFailed
+        }
+
+        let manifestURL = HookIntegrationPaths.paseoPluginManifestURL(homeDirectory: homeDirectory)
+        let entryURL = HookIntegrationPaths.paseoPluginServerEntryURL(homeDirectory: homeDirectory)
+        let manifestSnapshot = try configurationSnapshot(at: manifestURL)
+        let entrySnapshot = try configurationSnapshot(at: entryURL)
+        if let entryData = entrySnapshot.data,
+           paseoPluginEntryBelongsToOtherAppBundle(entryData) {
+            throw HookIntegrationError.conflictingBridgeCommand(
+                HookIntegrationPaths.paseoPluginIdentifier
+            )
+        }
+
+        let expectedManifest = HookIntegrationPaths.paseoPluginManifestData()
+        let expectedEntry = HookIntegrationPaths.paseoPluginServerEntryData(
+            homeDirectory: homeDirectory,
+            appBundleIdentifier: appBundleIdentifier
+        )
+        return manifestSnapshot.data != expectedManifest || entrySnapshot.data != expectedEntry
+    }
+
+    private func preflightPaseoPluginUninstall() throws {
+        let directory = HookIntegrationPaths.paseoPluginDirectory(homeDirectory: homeDirectory)
+        var dirInfo = stat()
+        if lstat(directory.path, &dirInfo) == 0 {
+            guard (dirInfo.st_mode & S_IFMT) == S_IFDIR else {
+                throw HookIntegrationError.unsafeConfigurationFile
+            }
+        } else if errno != ENOENT {
+            throw HookIntegrationError.configurationReadFailed
+        }
+
+        let manifestURL = HookIntegrationPaths.paseoPluginManifestURL(homeDirectory: homeDirectory)
+        let entryURL = HookIntegrationPaths.paseoPluginServerEntryURL(homeDirectory: homeDirectory)
+        _ = try configurationSnapshot(at: manifestURL)
+        let entrySnapshot = try configurationSnapshot(at: entryURL)
+        if let entryData = entrySnapshot.data,
+           paseoPluginEntryBelongsToOtherAppBundle(entryData) {
+            throw HookIntegrationError.conflictingBridgeCommand(
+                HookIntegrationPaths.paseoPluginIdentifier
+            )
+        }
+    }
+
+    private func paseoPluginEntryBelongsToOtherAppBundle(_ data: Data) -> Bool {
+        let otherBundleID = appBundleIdentifier == HookIntegrationPaths.developmentAppBundleIdentifier
+            ? HookIntegrationPaths.releaseAppBundleIdentifier
+            : HookIntegrationPaths.developmentAppBundleIdentifier
+        return String(data: data, encoding: .utf8)?
+            .contains("const APP_BUNDLE_ID = \"\(otherBundleID)\";") == true
+    }
+
+    private func installPaseoPluginFiles() throws {
+        let directory = HookIntegrationPaths.paseoPluginDirectory(homeDirectory: homeDirectory)
+        try createPrivateDirectoryIfNeeded(directory)
+
+        let manifestURL = HookIntegrationPaths.paseoPluginManifestURL(homeDirectory: homeDirectory)
+        let entryURL = HookIntegrationPaths.paseoPluginServerEntryURL(homeDirectory: homeDirectory)
+        let manifestOriginal = try configurationSnapshot(at: manifestURL)
+        let entryOriginal = try configurationSnapshot(at: entryURL)
+        let expectedManifest = HookIntegrationPaths.paseoPluginManifestData()
+        let expectedEntry = HookIntegrationPaths.paseoPluginServerEntryData(
+            homeDirectory: homeDirectory,
+            appBundleIdentifier: appBundleIdentifier
+        )
+
+        if manifestOriginal.data != expectedManifest {
+            try writeConfiguration(
+                expectedManifest,
+                to: manifestURL,
+                replacing: manifestOriginal
+            )
+        }
+        if entryOriginal.data != expectedEntry {
+            try writeConfiguration(
+                expectedEntry,
+                to: entryURL,
+                replacing: entryOriginal
+            )
+        }
+    }
+
+    private func removePaseoPluginFilesIfPresent() throws -> Bool {
+        let directory = HookIntegrationPaths.paseoPluginDirectory(homeDirectory: homeDirectory)
+        var dirInfo = stat()
+        guard lstat(directory.path, &dirInfo) == 0 else {
+            if errno == ENOENT { return false }
+            throw HookIntegrationError.configurationReadFailed
+        }
+        guard (dirInfo.st_mode & S_IFMT) == S_IFDIR else {
+            throw HookIntegrationError.unsafeConfigurationFile
+        }
+
+        var removed = false
+        for url in [
+            HookIntegrationPaths.paseoPluginManifestURL(homeDirectory: homeDirectory),
+            HookIntegrationPaths.paseoPluginServerEntryURL(homeDirectory: homeDirectory),
+        ] {
+            var fileInfo = stat()
+            if lstat(url.path, &fileInfo) == 0 {
+                guard (fileInfo.st_mode & S_IFMT) == S_IFREG else {
+                    throw HookIntegrationError.unsafeConfigurationFile
+                }
+                if Darwin.unlink(url.path) == 0 {
+                    removed = true
+                }
+            }
+        }
+        if let remaining = try? fileManager.contentsOfDirectory(atPath: directory.path),
+           remaining.isEmpty {
+            _ = Darwin.rmdir(directory.path)
+        }
+        return removed
+    }
+
+    /// Best-effort live reload when a local Paseo daemon is already running.
+    /// File configuration is the durable source of truth; CLI absence or an
+    /// offline daemon never fails installation or removal.
+    static func syncRunningPaseoDaemonIfPresent(
+        homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser,
+        installed: Bool
+    ) {
+        let paseoHome = homeDirectory.appendingPathComponent(".paseo", isDirectory: true)
+        let hasLivePIDFile = ["paseo.pid", "daemon.pid"].contains { fileName in
+            let pidURL = paseoHome.appendingPathComponent(fileName, isDirectory: false)
+            var pidInfo = stat()
+            return lstat(pidURL.path, &pidInfo) == 0 && (pidInfo.st_mode & S_IFMT) == S_IFREG
+        }
+        guard hasLivePIDFile,
+              let cliURL = discoverPaseoCLI(homeDirectory: homeDirectory) else {
+            return
+        }
+
+        let pluginID = HookIntegrationPaths.paseoPluginIdentifier
+        let pluginDirectory = HookIntegrationPaths.paseoPluginDirectory(
+            homeDirectory: homeDirectory
+        ).path
+
+        if installed {
+            _ = runPaseoCLI(cliURL, arguments: ["--home", paseoHome.path, "reload"])
+            let listResult = runPaseoCLI(
+                cliURL,
+                arguments: ["--home", paseoHome.path, "plugin", "ls", "--json"]
+            )
+            guard listResult.exitCode == 0 else { return }
+            let entries = (try? JSONSerialization.jsonObject(with: listResult.stdout))
+                as? [[String: Any]] ?? []
+            if let existing = entries.first(where: { ($0["id"] as? String) == pluginID }) {
+                if (existing["path"] as? String) != pluginDirectory {
+                    _ = runPaseoCLI(
+                        cliURL,
+                        arguments: ["--home", paseoHome.path, "plugin", "remove", pluginID]
+                    )
+                    _ = runPaseoCLI(
+                        cliURL,
+                        arguments: [
+                            "--home", paseoHome.path,
+                            "plugin", "install", pluginDirectory,
+                            "--id", pluginID,
+                        ]
+                    )
+                } else {
+                    _ = runPaseoCLI(
+                        cliURL,
+                        arguments: ["--home", paseoHome.path, "plugin", "enable", pluginID]
+                    )
+                    _ = runPaseoCLI(
+                        cliURL,
+                        arguments: ["--home", paseoHome.path, "plugin", "reload", pluginID]
+                    )
+                }
+            } else {
+                _ = runPaseoCLI(
+                    cliURL,
+                    arguments: [
+                        "--home", paseoHome.path,
+                        "plugin", "install", pluginDirectory,
+                        "--id", pluginID,
+                    ]
+                )
+            }
+        } else {
+            _ = runPaseoCLI(
+                cliURL,
+                arguments: ["--home", paseoHome.path, "plugin", "remove", pluginID]
+            )
+        }
+    }
+
+    private static func discoverPaseoCLI(homeDirectory: URL) -> URL? {
+        let candidates = [
+            URL(fileURLWithPath: "/Applications/Paseo.app/Contents/Resources/bin/paseo"),
+            homeDirectory.appendingPathComponent("Applications/Paseo.app/Contents/Resources/bin/paseo"),
+            homeDirectory.appendingPathComponent(".homebrew/bin/paseo"),
+            URL(fileURLWithPath: "/opt/homebrew/bin/paseo"),
+            URL(fileURLWithPath: "/usr/local/bin/paseo"),
+        ]
+        return candidates.first { FileManager.default.isExecutableFile(atPath: $0.path) }
+    }
+
+    private static func runPaseoCLI(
+        _ cliURL: URL,
+        arguments: [String],
+        timeout: TimeInterval = 5.0
+    ) -> (exitCode: Int32, stdout: Data) {
+        let process = Process()
+        let stdoutPipe = Pipe()
+        process.executableURL = cliURL
+        process.arguments = arguments
+        process.standardInput = FileHandle.nullDevice
+        process.standardOutput = stdoutPipe
+        process.standardError = FileHandle.nullDevice
+
+        let finished = DispatchSemaphore(value: 0)
+        process.terminationHandler = { _ in finished.signal() }
+        var output = Data()
+        let readGroup = DispatchGroup()
+        readGroup.enter()
+        DispatchQueue.global(qos: .utility).async {
+            output = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+            readGroup.leave()
+        }
+        do {
+            try process.run()
+        } catch {
+            try? stdoutPipe.fileHandleForWriting.close()
+            _ = readGroup.wait(timeout: .now() + 0.5)
+            return (-1, Data())
+        }
+        try? stdoutPipe.fileHandleForWriting.close()
+        if finished.wait(timeout: .now() + timeout) == .timedOut {
+            process.terminate()
+            _ = finished.wait(timeout: .now() + 0.5)
+            _ = readGroup.wait(timeout: .now() + 0.5)
+            return (-1, Data())
+        }
+        _ = readGroup.wait(timeout: .now() + 0.5)
+        return (process.terminationStatus, output)
     }
 
     private func isExecutableRegularFile(at url: URL) -> Bool {

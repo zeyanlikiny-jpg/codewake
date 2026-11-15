@@ -489,12 +489,11 @@ final class HookIntegrationTests: XCTestCase {
     }
 
     func testClaudeNotificationOnlyMapsWaitingKinds() throws {
-        for notificationType in [
-            "permission_prompt",
-            "idle_prompt",
-            "elicitation_dialog",
-            "elicitation_url_dialog",
-            "agent_needs_input",
+        for (notificationType, reason) in [
+            ("permission_prompt", HookWaitingReason.permission),
+            ("elicitation_dialog", .userInput),
+            ("elicitation_url_dialog", .userInput),
+            ("agent_needs_input", .userInput),
         ] {
             let waiting = try JSONSerialization.data(withJSONObject: [
                 "session_id": "session",
@@ -509,9 +508,17 @@ final class HookIntegrationTests: XCTestCase {
             )
             XCTAssertEqual(
                 HookEventSanitizer.payload(from: waiting, provider: .claudeCode)?.waitingReason,
-                .permission
+                reason
             )
         }
+        // `idle_prompt` arrives after the turn already finished; it must not
+        // re-open it as a wait.
+        let idle = try JSONSerialization.data(withJSONObject: [
+            "session_id": "session",
+            "hook_event_name": "Notification",
+            "notification_type": "idle_prompt",
+        ])
+        XCTAssertNil(HookEventSanitizer.payload(from: idle, provider: .claudeCode))
 
         let irrelevant = try JSONSerialization.data(withJSONObject: [
             "session_id": "session",
@@ -624,7 +631,7 @@ final class HookIntegrationTests: XCTestCase {
     }
 
     func testCriticalBoundariesAreOrderedButPostToolHooksStayAsync() throws {
-        for provider in HookProvider.allCases {
+        for provider in [HookProvider.codex, .claudeCode] {
             let edit = try HookConfigurationEditor.installing(in: nil, provider: provider)
             let root = try jsonObject(edit.data)
             let hooks = try XCTUnwrap(root["hooks"] as? [String: Any])
@@ -660,7 +667,7 @@ final class HookIntegrationTests: XCTestCase {
     }
 
     func testWaitingAndBackgroundBoundariesAreOrderedForBothProviders() throws {
-        for provider in HookProvider.allCases {
+        for provider in [HookProvider.codex, .claudeCode] {
             let edit = try HookConfigurationEditor.installing(in: nil, provider: provider)
             let root = try jsonObject(edit.data)
             let hooks = try XCTUnwrap(root["hooks"] as? [String: Any])
@@ -1542,6 +1549,456 @@ final class HookIntegrationTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: configuration), concurrent)
     }
 
+    func testAntigravityHooksConfigurationInstallsRepairsConflictsAndUninstallsPreservingForeignHooks() throws {
+        let home = URL(fileURLWithPath: "/Users/tester", isDirectory: true)
+        let foreign = try JSONSerialization.data(withJSONObject: [
+            "my-logger": [
+                "SessionStart": [[
+                    "type": "command",
+                    "command": "/usr/local/bin/my-hook",
+                ]],
+            ],
+        ])
+
+        let installed = try HookConfigurationEditor.installing(
+            in: foreign,
+            provider: .antigravity,
+            homeDirectory: home
+        )
+        XCTAssertTrue(installed.changed)
+        XCTAssertEqual(
+            HookConfigurationEditor.health(
+                of: installed.data,
+                provider: .antigravity,
+                homeDirectory: home
+            ),
+            .installed
+        )
+        let root = try jsonObject(installed.data)
+        XCTAssertNotNil(root["my-logger"])
+        let codewake = try XCTUnwrap(root["codewake"] as? [String: Any])
+        for event in ["SessionStart", "PreInvocation", "PostInvocation", "Stop"] {
+            let handlers = try XCTUnwrap(codewake[event] as? [[String: Any]])
+            XCTAssertEqual(handlers.count, 1)
+            XCTAssertNil(handlers[0]["matcher"])
+        }
+        let postToolGroups = try XCTUnwrap(codewake["PostToolUse"] as? [[String: Any]])
+        XCTAssertEqual(postToolGroups.first?["matcher"] as? String, "*")
+        let postToolHandlers = try XCTUnwrap(postToolGroups.first?["hooks"] as? [[String: Any]])
+        XCTAssertEqual(postToolHandlers.count, 1)
+        // `PreToolUse` is a permission gate in Antigravity; an observer must
+        // never register for it (its `{}` output hard-denies every tool).
+        XCTAssertNil(codewake["PreToolUse"])
+
+        let second = try HookConfigurationEditor.installing(
+            in: installed.data,
+            provider: .antigravity,
+            homeDirectory: home
+        )
+        XCTAssertFalse(second.changed)
+        XCTAssertEqual(second.data, installed.data)
+
+        // Missing Stop inside `codewake` is detected as needsRepair and repaired cleanly.
+        var brokenRoot = root
+        var brokenEntry = codewake
+        brokenEntry.removeValue(forKey: "Stop")
+        brokenRoot["codewake"] = brokenEntry
+        let brokenData = try JSONSerialization.data(withJSONObject: brokenRoot)
+        XCTAssertEqual(
+            HookConfigurationEditor.health(
+                of: brokenData,
+                provider: .antigravity,
+                homeDirectory: home
+            ),
+            .needsRepair
+        )
+        let repaired = try HookConfigurationEditor.installing(
+            in: brokenData,
+            provider: .antigravity,
+            homeDirectory: home
+        )
+        XCTAssertTrue(repaired.changed)
+        XCTAssertEqual(
+            HookConfigurationEditor.health(
+                of: repaired.data,
+                provider: .antigravity,
+                homeDirectory: home
+            ),
+            .installed
+        )
+
+        // A conflicting LidlessAIHookBridge command under another hook key is rejected.
+        let conflicting = try JSONSerialization.data(withJSONObject: [
+            "other-entry": [
+                "Stop": [[
+                    "type": "command",
+                    "command": "/tmp/LidlessAIHookBridge --provider antigravity --custom",
+                ]],
+            ],
+        ])
+        XCTAssertEqual(
+            HookConfigurationEditor.health(
+                of: conflicting,
+                provider: .antigravity,
+                homeDirectory: home
+            ),
+            .conflict
+        )
+        XCTAssertThrowsError(
+            try HookConfigurationEditor.installing(
+                in: conflicting,
+                provider: .antigravity,
+                homeDirectory: home
+            )
+        )
+
+        let uninstalled = try HookConfigurationEditor.uninstalling(
+            from: repaired.data,
+            provider: .antigravity,
+            homeDirectory: home
+        )
+        XCTAssertTrue(uninstalled.changed)
+        let uninstalledRoot = try jsonObject(uninstalled.data)
+        XCTAssertNil(uninstalledRoot["codewake"])
+        XCTAssertNotNil(uninstalledRoot["my-logger"])
+    }
+
+    func testLegacyAntigravityPreToolUseEntryNeedsRepairAndRepairRemovesTheGate() throws {
+        let home = URL(fileURLWithPath: "/Users/tester", isDirectory: true)
+        let command = HookIntegrationPaths.bridgeCommand(provider: .antigravity)
+        let handler: [String: Any] = ["type": "command", "command": command, "timeout": 2]
+        let grouped: [[String: Any]] = [["matcher": "*", "hooks": [handler]]]
+        // Exact shape written by builds up to 0.2.19.
+        let legacy = try JSONSerialization.data(withJSONObject: [
+            "codewake": [
+                "SessionStart": [handler],
+                "PreInvocation": [handler],
+                "PostInvocation": [handler],
+                "PreToolUse": grouped,
+                "PostToolUse": grouped,
+                "Stop": [handler],
+            ],
+            "my-gate": [
+                "PreToolUse": [["matcher": "run_command", "hooks": [[
+                    "type": "command", "command": "/usr/local/bin/my-gate",
+                ]]]],
+            ],
+        ])
+        XCTAssertEqual(
+            HookConfigurationEditor.health(of: legacy, provider: .antigravity, homeDirectory: home),
+            .needsRepair
+        )
+        let repaired = try HookConfigurationEditor.installing(
+            in: legacy,
+            provider: .antigravity,
+            homeDirectory: home
+        )
+        XCTAssertTrue(repaired.changed)
+        XCTAssertEqual(
+            HookConfigurationEditor.health(of: repaired.data, provider: .antigravity, homeDirectory: home),
+            .installed
+        )
+        let root = try jsonObject(repaired.data)
+        let codewake = try XCTUnwrap(root["codewake"] as? [String: Any])
+        XCTAssertNil(codewake["PreToolUse"])
+        XCTAssertNotNil(codewake["PostToolUse"])
+        // A foreign user gate is preserved untouched.
+        let foreign = try XCTUnwrap(root["my-gate"] as? [String: Any])
+        XCTAssertNotNil(foreign["PreToolUse"])
+    }
+
+    func testAntigravityHookResponseNeverDeniesAGateAndStaysPassiveOtherwise() throws {
+        func response(_ object: [String: Any]) throws -> [String: Any] {
+            let data = AntigravityHookResponse.stdout(
+                forRawInput: try JSONSerialization.data(withJSONObject: object)
+            )
+            return try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+        }
+
+        // A gate must carry an explicit, non-escalating decision: `{}` is an
+        // empty decision that Antigravity enforces as deny, and "allow" would
+        // silently bypass the user's permission settings.
+        let gate = try response([
+            "conversationId": "conv-1",
+            "hookEventName": "PreToolUse",
+            "toolCall": ["name": "run_command", "args": ["CommandLine": "ls"]],
+        ])
+        XCTAssertEqual(gate["decision"] as? String, "ask")
+        XCTAssertEqual(gate.count, 1)
+
+        for event in ["SessionStart", "PreInvocation", "PostInvocation", "PostToolUse", "Stop"] {
+            let passive = try response(["conversationId": "conv-1", "hookEventName": event])
+            XCTAssertTrue(passive.isEmpty, event)
+        }
+
+        // Unreadable input cannot prove the event is not a gate.
+        for raw in [nil, Data(), Data("not json".utf8), Data("[]".utf8), Data("{}".utf8)] {
+            let data = AntigravityHookResponse.stdout(forRawInput: raw)
+            let object = try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
+            XCTAssertEqual(object["decision"] as? String, "ask")
+        }
+    }
+
+    func testAntigravityPayloadSanitizesLifecycleWaitingCancellationFailureAndStripsPrivateFields() throws {
+        func sanitize(_ object: [String: Any]) throws -> HookBridgePayload {
+            let data = try JSONSerialization.data(withJSONObject: object)
+            return try XCTUnwrap(
+                HookEventSanitizer.payload(from: data, provider: .antigravity, timestamp: 42)
+            )
+        }
+
+        let start = try sanitize([
+            "conversationId": "conv-1",
+            "executionId": "exec-1",
+            "hookEventName": "PreInvocation",
+            "userMessage": "secret prompt",
+            "workspaceRoot": "/Users/private/repo",
+        ])
+        XCTAssertEqual(start.provider, "antigravity")
+        XCTAssertEqual(start.sessionID, "conv-1")
+        XCTAssertEqual(start.turnID, "exec-1")
+        XCTAssertEqual(start.eventKind, .promptSubmitted)
+        let startJSON = String(decoding: try JSONEncoder().encode(start), as: UTF8.self)
+        XCTAssertFalse(startJSON.contains("secret prompt"))
+        XCTAssertFalse(startJSON.contains("/Users/private/repo"))
+
+        let askTool = try sanitize([
+            "conversationId": "conv-1",
+            "executionId": "exec-1",
+            "hookEventName": "PreToolUse",
+            "toolCall": [
+                "name": "ask_question",
+                "arguments": ["questions": "private"],
+            ],
+        ])
+        XCTAssertEqual(askTool.eventKind, .waitingForInput)
+        XCTAssertEqual(askTool.waitingReason, .userInput)
+
+        let askDone = try sanitize([
+            "conversationId": "conv-1",
+            "executionId": "exec-1",
+            "hookEventName": "PostToolUse",
+            "toolCall": ["name": "ask_question"],
+        ])
+        XCTAssertEqual(askDone.eventKind, .inputReceived)
+
+        let postStep = try sanitize([
+            "conversationId": "conv-1",
+            "executionId": "exec-1",
+            "hookEventName": "PostInvocation",
+        ])
+        XCTAssertEqual(postStep.eventKind, .activity)
+
+        // Subagents still running: Stop with fullyIdle=false keeps backgroundWorkCount=1.
+        let stopWithSubagents = try sanitize([
+            "conversationId": "conv-1",
+            "executionId": "exec-1",
+            "hookEventName": "Stop",
+            "terminationReason": "COMPLETE",
+            "fullyIdle": false,
+        ])
+        XCTAssertEqual(stopWithSubagents.eventKind, .turnCompleted)
+        XCTAssertEqual(stopWithSubagents.backgroundWorkCount, 1)
+
+        // Fully idle completion: backgroundWorkCount=0 allows normal sleep release.
+        let stopIdle = try sanitize([
+            "conversationId": "conv-1",
+            "executionId": "exec-1",
+            "hookEventName": "Stop",
+            "terminationReason": "COMPLETE",
+            "fullyIdle": true,
+        ])
+        XCTAssertEqual(stopIdle.eventKind, .turnCompleted)
+        XCTAssertEqual(stopIdle.backgroundWorkCount, 0)
+
+        let canceled = try sanitize([
+            "conversationId": "conv-1",
+            "executionId": "exec-1",
+            "hookEventName": "Stop",
+            "terminationReason": "USER_CANCELED",
+        ])
+        XCTAssertEqual(canceled.eventKind, .turnCancelled)
+
+        let failed = try sanitize([
+            "conversationId": "conv-1",
+            "executionId": "exec-1",
+            "hookEventName": "Stop",
+            "terminationReason": "ERROR",
+        ])
+        XCTAssertEqual(failed.eventKind, .turnFailed)
+    }
+
+    func testPaseoConfigurationAndPluginFilesInstallRepairConflictAndUninstallPreservingUserConfig() throws {
+        let fileManager = FileManager.default
+        let temporaryHome = fileManager.temporaryDirectory
+            .appendingPathComponent("lidless-paseo-tests-\(UUID().uuidString)", isDirectory: true)
+        try fileManager.createDirectory(at: temporaryHome, withIntermediateDirectories: true)
+        defer { try? fileManager.removeItem(at: temporaryHome) }
+
+        let source = temporaryHome.appendingPathComponent("source-bridge")
+        try Data("bridge".utf8).write(to: source)
+        XCTAssertEqual(Darwin.chmod(source.path, 0o755), 0)
+
+        let paseoConfig = HookProvider.paseo.configurationURL(homeDirectory: temporaryHome)
+        try fileManager.createDirectory(
+            at: paseoConfig.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        let initialConfig = try JSONSerialization.data(withJSONObject: [
+            "listen": "127.0.0.1:6767",
+            "plugins": [
+                "user-plugin": [
+                    "source": "directory",
+                    "path": "/Users/tester/my-plugin",
+                    "enabled": true,
+                ],
+            ],
+        ])
+        try initialConfig.write(to: paseoConfig)
+
+        let installer = HookIntegrationInstaller(
+            homeDirectory: temporaryHome,
+            bridgeSourceURL: source,
+            fileManager: fileManager
+        )
+        XCTAssertEqual(installer.health(for: .paseo).state, .notInstalled)
+
+        let installed = try installer.install(.paseo)
+        XCTAssertTrue(installed.configurationChanged)
+        XCTAssertTrue(installed.bridgeChanged)
+        XCTAssertEqual(installer.health(for: .paseo).state, .installed)
+
+        let manifestURL = HookIntegrationPaths.paseoPluginManifestURL(homeDirectory: temporaryHome)
+        let entryURL = HookIntegrationPaths.paseoPluginServerEntryURL(homeDirectory: temporaryHome)
+        XCTAssertTrue(fileManager.fileExists(atPath: manifestURL.path))
+        XCTAssertTrue(fileManager.fileExists(atPath: entryURL.path))
+        let manifest = try jsonObject(Data(contentsOf: manifestURL))
+        let requirements = try XCTUnwrap(manifest["requirements"] as? [String: Any])
+        XCTAssertEqual(requirements["paseo"] as? String, ">=0.9.0")
+
+        let root = try jsonObject(Data(contentsOf: paseoConfig))
+        XCTAssertEqual(root["listen"] as? String, "127.0.0.1:6767")
+        XCTAssertEqual(root["pluginsEnabled"] as? Bool, true)
+        let plugins = try XCTUnwrap(root["plugins"] as? [String: Any])
+        XCTAssertNotNil(plugins["user-plugin"])
+        let codewakePlugin = try XCTUnwrap(plugins["codewake"] as? [String: Any])
+        XCTAssertEqual(codewakePlugin["source"] as? String, "directory")
+        XCTAssertEqual(
+            codewakePlugin["path"] as? String,
+            HookIntegrationPaths.paseoPluginDirectory(homeDirectory: temporaryHome).path
+        )
+
+        let idempotent = try installer.install(.paseo)
+        XCTAssertFalse(idempotent.configurationChanged)
+        XCTAssertFalse(idempotent.bridgeChanged)
+
+        // Removing the managed plugin entry file marks Paseo as needsRepair and repairs cleanly.
+        try fileManager.removeItem(at: entryURL)
+        XCTAssertEqual(installer.health(for: .paseo).state, .needsRepair)
+        let repaired = try installer.install(.paseo)
+        XCTAssertTrue(repaired.configurationChanged)
+        XCTAssertFalse(repaired.bridgeChanged)
+        XCTAssertEqual(installer.health(for: .paseo).state, .installed)
+
+        let uninstalled = try installer.uninstall(.paseo)
+        XCTAssertTrue(uninstalled.configurationChanged)
+        XCTAssertEqual(installer.health(for: .paseo).state, .notInstalled)
+        XCTAssertFalse(
+            fileManager.fileExists(
+                atPath: HookIntegrationPaths.paseoPluginDirectory(homeDirectory: temporaryHome).path
+            )
+        )
+        let afterRoot = try jsonObject(Data(contentsOf: paseoConfig))
+        XCTAssertEqual(afterRoot["listen"] as? String, "127.0.0.1:6767")
+        let afterPlugins = try XCTUnwrap(afterRoot["plugins"] as? [String: Any])
+        XCTAssertNotNil(afterPlugins["user-plugin"])
+        XCTAssertNil(afterPlugins["codewake"])
+    }
+
+    func testPaseoPayloadSanitizesTurnsPermissionsCancellationAndSessionClose() throws {
+        func sanitize(_ object: [String: Any]) throws -> HookBridgePayload {
+            let data = try JSONSerialization.data(withJSONObject: object)
+            return try XCTUnwrap(
+                HookEventSanitizer.payload(from: data, provider: .paseo, timestamp: 99)
+            )
+        }
+
+        let created = try sanitize([
+            "agentId": "agent-1",
+            "hookEventName": "agent.create.after",
+            "cwd": "/Users/private/project",
+        ])
+        XCTAssertEqual(created.provider, "paseo")
+        XCTAssertEqual(created.sessionID, "agent-1")
+        XCTAssertEqual(created.eventKind, .sessionStarted)
+        let createdJSON = String(decoding: try JSONEncoder().encode(created), as: UTF8.self)
+        XCTAssertFalse(createdJSON.contains("/Users/private/project"))
+
+        let turnStart = try sanitize([
+            "agentId": "agent-1",
+            "turnId": "turn-7",
+            "hookEventName": "agent.turn.before",
+            "prompt": "do not forward",
+        ])
+        XCTAssertEqual(turnStart.turnID, "turn-7")
+        XCTAssertEqual(turnStart.eventKind, .promptSubmitted)
+
+        let permissionWait = try sanitize([
+            "agentId": "agent-1",
+            "turnId": "turn-7",
+            "hookEventName": "agent.permission.before",
+        ])
+        XCTAssertEqual(permissionWait.eventKind, .waitingForInput)
+        XCTAssertEqual(permissionWait.waitingReason, .permission)
+
+        let permissionDone = try sanitize([
+            "agentId": "agent-1",
+            "turnId": "turn-7",
+            "hookEventName": "agent.permission.after",
+        ])
+        XCTAssertEqual(permissionDone.eventKind, .inputReceived)
+
+        let completed = try sanitize([
+            "agentId": "agent-1",
+            "turnId": "turn-7",
+            "hookEventName": "agent.turn.after",
+            "outcome": "completed",
+        ])
+        XCTAssertEqual(completed.eventKind, .turnCompleted)
+        XCTAssertEqual(completed.backgroundWorkCount, 0)
+
+        let canceledWithTurn = try sanitize([
+            "agentId": "agent-1",
+            "turnId": "turn-7",
+            "hookEventName": "agent.turn.after",
+            "outcome": "canceled",
+        ])
+        XCTAssertEqual(canceledWithTurn.eventKind, .turnCancelled)
+
+        // When Paseo omits turnId on cancellation, sessionEnded immediately ends active turns
+        // with policy-only release and allows later turns to reopen the session cleanly.
+        let canceledWithoutTurn = try sanitize([
+            "agentId": "agent-1",
+            "hookEventName": "agent.turn.after",
+            "outcome": "canceled",
+        ])
+        XCTAssertEqual(canceledWithoutTurn.eventKind, .sessionEnded)
+
+        let failed = try sanitize([
+            "agentId": "agent-1",
+            "turnId": "turn-7",
+            "hookEventName": "agent.turn.after",
+            "outcome": "failed",
+        ])
+        XCTAssertEqual(failed.eventKind, .turnFailed)
+
+        let closed = try sanitize([
+            "agentId": "agent-1",
+            "hookEventName": "agent.close.after",
+        ])
+        XCTAssertEqual(closed.eventKind, .sessionEnded)
+    }
+
     private func jsonObject(_ data: Data) throws -> [String: Any] {
         try XCTUnwrap(JSONSerialization.jsonObject(with: data) as? [String: Any])
     }
@@ -1582,5 +2039,97 @@ final class HookIntegrationTests: XCTestCase {
             "--previous-notify",
             String(decoding: nested, as: UTF8.self),
         ]
+    }
+}
+
+// MARK: - Regression tests for hook contract fixes
+
+extension HookIntegrationTests {
+    func testClaudeIdlePromptIsNotAWaitAndNotificationReasonsFollowTheirType() throws {
+        func payload(_ type: String) throws -> HookBridgePayload? {
+            let data = try JSONSerialization.data(withJSONObject: [
+                "session_id": "s1",
+                "hook_event_name": "Notification",
+                "notification_type": type,
+            ])
+            return HookEventSanitizer.payload(from: data, provider: .claudeCode, timestamp: 1)
+        }
+        XCTAssertNil(try payload("idle_prompt"))
+        XCTAssertEqual(try payload("permission_prompt")?.waitingReason, .permission)
+        XCTAssertEqual(try payload("elicitation_dialog")?.waitingReason, .userInput)
+        XCTAssertEqual(try payload("agent_needs_input")?.waitingReason, .userInput)
+    }
+
+    func testPaseoUsesPluginEmissionTimeOnlyNearTheBridgeClock() throws {
+        func payload(emittedAt: Any?) throws -> HookBridgePayload {
+            var object: [String: Any] = [
+                "session_id": "agent-1",
+                "hook_event_name": "agent.turn.before",
+            ]
+            object["emitted_at"] = emittedAt
+            let data = try JSONSerialization.data(withJSONObject: object)
+            return try XCTUnwrap(
+                HookEventSanitizer.payload(from: data, provider: .paseo, timestamp: 1_000)
+            )
+        }
+        XCTAssertEqual(try payload(emittedAt: 999.25).timestamp, 999.25)
+        XCTAssertEqual(try payload(emittedAt: nil).timestamp, 1_000)
+        XCTAssertEqual(try payload(emittedAt: 1_000 - 301).timestamp, 1_000)
+        XCTAssertEqual(try payload(emittedAt: 1_000 + 301).timestamp, 1_000)
+        XCTAssertEqual(try payload(emittedAt: "999").timestamp, 1_000)
+
+        let script = String(decoding: HookIntegrationPaths.paseoPluginServerEntryData(
+            homeDirectory: URL(fileURLWithPath: "/Users/tester", isDirectory: true)
+        ), as: UTF8.self)
+        XCTAssertTrue(script.contains("emitted_at: emittedAt"))
+    }
+
+    func testAntigravityEnabledFlagIsAcceptedAndADisabledCodeWakeEntryIsNotInstalled() throws {
+        let home = URL(fileURLWithPath: "/Users/tester", isDirectory: true)
+        let installed = try HookConfigurationEditor.installing(
+            in: try JSONSerialization.data(withJSONObject: [
+                "paused-linter": [
+                    "enabled": false,
+                    "PostToolUse": [["matcher": "*", "hooks": [[
+                        "type": "command", "command": "/usr/local/bin/lint",
+                    ]]]],
+                ],
+            ]),
+            provider: .antigravity,
+            homeDirectory: home
+        )
+        XCTAssertEqual(
+            HookConfigurationEditor.health(of: installed.data, provider: .antigravity, homeDirectory: home),
+            .installed
+        )
+
+        var root = try jsonObject(installed.data)
+        var codewake = try XCTUnwrap(root["codewake"] as? [String: Any])
+        codewake["enabled"] = false
+        root["codewake"] = codewake
+        let disabled = try JSONSerialization.data(withJSONObject: root)
+        XCTAssertEqual(
+            HookConfigurationEditor.health(of: disabled, provider: .antigravity, homeDirectory: home),
+            .notInstalled
+        )
+
+        codewake["enabled"] = true
+        root["codewake"] = codewake
+        let enabled = try JSONSerialization.data(withJSONObject: root)
+        XCTAssertEqual(
+            HookConfigurationEditor.health(of: enabled, provider: .antigravity, homeDirectory: home),
+            .installed
+        )
+
+        codewake["enabled"] = "no"
+        root["codewake"] = codewake
+        XCTAssertEqual(
+            HookConfigurationEditor.health(
+                of: try JSONSerialization.data(withJSONObject: root),
+                provider: .antigravity,
+                homeDirectory: home
+            ),
+            .conflict
+        )
     }
 }

@@ -23,7 +23,7 @@ struct OnboardingView: View {
                 .padding(.horizontal, 24)
                 .padding(.vertical, 16)
         }
-        .frame(width: 460, height: 560)
+        .frame(width: 460, height: 620)
         .environment(\.locale, state.appLanguage.locale)
     }
 
@@ -124,7 +124,7 @@ struct OnboardingView: View {
     private var agentIntegrationStep: some View {
         VStack(alignment: .leading, spacing: 18) {
             header(symbol: "terminal.fill", title: "Connect your coding agents")
-            Text("Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, Claude Code CLI, and Claude Desktop. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code.")
+            Text("Install privacy-minimized lifecycle hooks shared by Codex Desktop, Codex CLI, Claude Code CLI, Claude Desktop, Paseo, and Antigravity. They send only opaque IDs/tokens, event type, background-work count, and time — never prompts, answers, paths, commands, or source code.")
                 .font(.callout)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -142,6 +142,8 @@ struct OnboardingView: View {
                 observationRow("Codex CLI", observed: state.codexCLIObserved)
                 observationRow("Claude Code CLI", observed: state.claudeCodeObserved)
                 observationRow("Claude Desktop", observed: state.claudeDesktopObserved)
+                observationRow("Paseo", observed: state.paseoObserved)
+                observationRow("Antigravity", observed: state.antigravityObserved)
                 Button {
                     state.installAgentIntegrations()
                 } label: {

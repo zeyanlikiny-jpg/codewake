@@ -16,8 +16,24 @@ enum HookConfigurationEditor {
     static func installing(
         in originalData: Data?,
         provider: HookProvider,
-        appBundleIdentifier: String = HookIntegrationPaths.releaseAppBundleIdentifier
+        appBundleIdentifier: String = HookIntegrationPaths.releaseAppBundleIdentifier,
+        homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser
     ) throws -> HookConfigurationEdit {
+        switch provider {
+        case .antigravity:
+            return try installingAntigravity(
+                in: originalData,
+                appBundleIdentifier: appBundleIdentifier
+            )
+        case .paseo:
+            return try installingPaseo(
+                in: originalData,
+                homeDirectory: homeDirectory
+            )
+        case .codex, .claudeCode:
+            break
+        }
+
         var root = try parseRoot(originalData)
         var hooks = try validatedHooks(from: root)
         var changed = false
@@ -101,8 +117,24 @@ enum HookConfigurationEditor {
     static func uninstalling(
         from originalData: Data?,
         provider: HookProvider,
-        appBundleIdentifier: String = HookIntegrationPaths.releaseAppBundleIdentifier
+        appBundleIdentifier: String = HookIntegrationPaths.releaseAppBundleIdentifier,
+        homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser
     ) throws -> HookConfigurationEdit {
+        switch provider {
+        case .antigravity:
+            return try uninstallingAntigravity(
+                from: originalData,
+                appBundleIdentifier: appBundleIdentifier
+            )
+        case .paseo:
+            return try uninstallingPaseo(
+                from: originalData,
+                homeDirectory: homeDirectory
+            )
+        case .codex, .claudeCode:
+            break
+        }
+
         guard let originalData else {
             return HookConfigurationEdit(data: Data(), changed: false)
         }
@@ -165,8 +197,24 @@ enum HookConfigurationEditor {
     static func health(
         of originalData: Data?,
         provider: HookProvider,
-        appBundleIdentifier: String = HookIntegrationPaths.releaseAppBundleIdentifier
+        appBundleIdentifier: String = HookIntegrationPaths.releaseAppBundleIdentifier,
+        homeDirectory: URL = FileManager.default.homeDirectoryForCurrentUser
     ) -> HookIntegrationHealthState {
+        switch provider {
+        case .antigravity:
+            return antigravityHealth(
+                of: originalData,
+                appBundleIdentifier: appBundleIdentifier
+            )
+        case .paseo:
+            return paseoHealth(
+                of: originalData,
+                homeDirectory: homeDirectory
+            )
+        case .codex, .claudeCode:
+            break
+        }
+
         guard let originalData else { return .notInstalled }
         do {
             let root = try parseRoot(originalData)
@@ -373,6 +421,448 @@ enum HookConfigurationEditor {
         )
         data.append(0x0A)
         return data
+    }
+
+    // MARK: Antigravity (`~/.gemini/config/hooks.json`)
+
+    private static let antigravityGroupedEvents: Set<String> = ["PreToolUse", "PostToolUse"]
+    /// Documented hook-level switch (`"enabled": false`); not an event list.
+    private static let antigravityEnabledKey = "enabled"
+
+    private static func installingAntigravity(
+        in originalData: Data?,
+        appBundleIdentifier: String
+    ) throws -> HookConfigurationEdit {
+        var root = try parseRoot(originalData)
+        let entryName = HookIntegrationPaths.antigravityHookEntryName
+        let command = HookIntegrationPaths.bridgeCommand(
+            provider: .antigravity,
+            appBundleIdentifier: appBundleIdentifier
+        )
+
+        for (hookName, hookValue) in root where hookName != entryName {
+            try rejectBridgeCommandInForeignAntigravityHook(
+                hookValue,
+                hookName: hookName
+            )
+        }
+
+        let canonicalEntry = canonicalAntigravityEntry(command: command)
+        if let existingEntry = root[entryName] {
+            let state = try inspectOwnedAntigravityEntry(
+                existingEntry,
+                expectedCommand: command
+            )
+            if state == .installed,
+               let originalData {
+                return HookConfigurationEdit(data: originalData, changed: false)
+            }
+        }
+
+        root[entryName] = canonicalEntry
+        return HookConfigurationEdit(data: try encoded(root), changed: true)
+    }
+
+    private static func uninstallingAntigravity(
+        from originalData: Data?,
+        appBundleIdentifier: String
+    ) throws -> HookConfigurationEdit {
+        guard let originalData else {
+            return HookConfigurationEdit(data: Data(), changed: false)
+        }
+        var root = try parseRoot(originalData)
+        let entryName = HookIntegrationPaths.antigravityHookEntryName
+        let command = HookIntegrationPaths.bridgeCommand(
+            provider: .antigravity,
+            appBundleIdentifier: appBundleIdentifier
+        )
+
+        for (hookName, hookValue) in root where hookName != entryName {
+            try rejectBridgeCommandInForeignAntigravityHook(
+                hookValue,
+                hookName: hookName
+            )
+        }
+
+        guard let existingEntry = root[entryName] else {
+            return HookConfigurationEdit(data: originalData, changed: false)
+        }
+        _ = try inspectOwnedAntigravityEntry(existingEntry, expectedCommand: command)
+        root.removeValue(forKey: entryName)
+        return HookConfigurationEdit(data: try encoded(root), changed: true)
+    }
+
+    private static func antigravityHealth(
+        of originalData: Data?,
+        appBundleIdentifier: String
+    ) -> HookIntegrationHealthState {
+        guard let originalData else { return .notInstalled }
+        do {
+            let root = try parseRoot(originalData)
+            let entryName = HookIntegrationPaths.antigravityHookEntryName
+            let command = HookIntegrationPaths.bridgeCommand(
+                provider: .antigravity,
+                appBundleIdentifier: appBundleIdentifier
+            )
+
+            for (hookName, hookValue) in root where hookName != entryName {
+                try rejectBridgeCommandInForeignAntigravityHook(
+                    hookValue,
+                    hookName: hookName
+                )
+            }
+
+            guard let existingEntry = root[entryName] else {
+                return .notInstalled
+            }
+            return try inspectOwnedAntigravityEntry(
+                existingEntry,
+                expectedCommand: command
+            )
+        } catch HookIntegrationError.invalidJSON, HookIntegrationError.invalidTopLevel {
+            return .invalidConfiguration
+        } catch {
+            return .conflict
+        }
+    }
+
+    private static func canonicalAntigravityEntry(command: String) -> [String: Any] {
+        let handler: [String: Any] = [
+            "type": "command",
+            "command": command,
+            "timeout": 2,
+        ]
+        var entry: [String: Any] = [:]
+        for event in HookProvider.antigravity.installedEvents {
+            if antigravityGroupedEvents.contains(event) {
+                entry[event] = [[
+                    "matcher": "*",
+                    "hooks": [handler],
+                ]]
+            } else {
+                entry[event] = [handler]
+            }
+        }
+        return entry
+    }
+
+    private static func rejectBridgeCommandInForeignAntigravityHook(
+        _ value: Any,
+        hookName: String
+    ) throws {
+        guard let events = value as? [String: Any] else {
+            throw HookIntegrationError.conflictingStructure(hookName)
+        }
+        for (eventName, eventValue) in events {
+            // `enabled` is a documented hook-level Bool, not an event list.
+            if eventName == antigravityEnabledKey {
+                guard strictJSONBoolean(eventValue) != nil else {
+                    throw HookIntegrationError.conflictingStructure(hookName)
+                }
+                continue
+            }
+            guard let items = eventValue as? [Any] else {
+                throw HookIntegrationError.conflictingStructure(hookName)
+            }
+            for item in items {
+                guard let dict = item as? [String: Any] else {
+                    throw HookIntegrationError.conflictingStructure(hookName)
+                }
+                if let nested = dict["hooks"] as? [Any] {
+                    for nestedItem in nested {
+                        guard let handler = nestedItem as? [String: Any] else {
+                            throw HookIntegrationError.conflictingStructure(hookName)
+                        }
+                        if (handler["command"] as? String)?.contains(bridgeName) == true {
+                            throw HookIntegrationError.conflictingBridgeCommand(hookName)
+                        }
+                    }
+                } else if (dict["command"] as? String)?.contains(bridgeName) == true {
+                    throw HookIntegrationError.conflictingBridgeCommand(hookName)
+                }
+            }
+        }
+    }
+
+    private static func inspectOwnedAntigravityEntry(
+        _ rawEntry: Any,
+        expectedCommand: String
+    ) throws -> HookIntegrationHealthState {
+        let entryName = HookIntegrationPaths.antigravityHookEntryName
+        guard var entry = rawEntry as? [String: Any] else {
+            throw HookIntegrationError.conflictingStructure(entryName)
+        }
+        if let rawEnabled = entry.removeValue(forKey: antigravityEnabledKey) {
+            guard let enabled = strictJSONBoolean(rawEnabled) else {
+                throw HookIntegrationError.conflictingStructure(
+                    "\(entryName).\(antigravityEnabledKey)"
+                )
+            }
+            // The user switched CodeWake's hook off in Antigravity. Report it
+            // as not installed so nothing auto-repairs it back on; an explicit
+            // Install still replaces it with the canonical, enabled entry.
+            if !enabled { return .notInstalled }
+        }
+        if entry.isEmpty { return .needsRepair }
+
+        var canonicalEventCount = 0
+        for (event, rawItems) in entry {
+            guard let items = rawItems as? [Any] else {
+                throw HookIntegrationError.conflictingStructure("\(entryName).\(event)")
+            }
+            var eventMatches = 0
+            let expectsGroups = antigravityGroupedEvents.contains(event)
+            for (index, rawItem) in items.enumerated() {
+                guard let item = rawItem as? [String: Any] else {
+                    throw HookIntegrationError.conflictingStructure(
+                        "\(entryName).\(event)[\(index)]"
+                    )
+                }
+                if expectsGroups, let nested = item["hooks"] {
+                    guard let handlers = nested as? [Any] else {
+                        throw HookIntegrationError.conflictingStructure(
+                            "\(entryName).\(event)[\(index)].hooks"
+                        )
+                    }
+                    let matcherOK = (item["matcher"] as? String) == "*"
+                        && Set(item.keys) == Set(["matcher", "hooks"])
+                    for rawHandler in handlers {
+                        guard let handler = rawHandler as? [String: Any] else {
+                            throw HookIntegrationError.conflictingStructure(
+                                "\(entryName).\(event)[\(index)].hooks"
+                            )
+                        }
+                        try validateOwnedAntigravityHandler(
+                            handler,
+                            expectedCommand: expectedCommand,
+                            event: event
+                        )
+                        if matcherOK, antigravityHandlerExecutionIsCanonical(handler) {
+                            eventMatches += 1
+                        }
+                    }
+                } else {
+                    try validateOwnedAntigravityHandler(
+                        item,
+                        expectedCommand: expectedCommand,
+                        event: event
+                    )
+                    if !expectsGroups, antigravityHandlerExecutionIsCanonical(item) {
+                        eventMatches += 1
+                    }
+                }
+            }
+            if HookProvider.antigravity.installedEvents.contains(event),
+               items.count == 1,
+               eventMatches == 1 {
+                canonicalEventCount += 1
+            }
+        }
+
+        let expectedEvents = Set(HookProvider.antigravity.installedEvents)
+        if Set(entry.keys) == expectedEvents,
+           canonicalEventCount == expectedEvents.count {
+            return .installed
+        }
+        return .needsRepair
+    }
+
+    private static func validateOwnedAntigravityHandler(
+        _ handler: [String: Any],
+        expectedCommand: String,
+        event: String
+    ) throws {
+        guard let command = handler["command"] as? String else {
+            throw HookIntegrationError.conflictingStructure(
+                "\(HookIntegrationPaths.antigravityHookEntryName).\(event)"
+            )
+        }
+        guard command.contains(bridgeName) else {
+            throw HookIntegrationError.conflictingStructure(
+                "\(HookIntegrationPaths.antigravityHookEntryName).\(event)"
+            )
+        }
+        guard command == expectedCommand,
+              (handler["type"] as? String) == "command" else {
+            throw HookIntegrationError.conflictingBridgeCommand(event)
+        }
+    }
+
+    private static func antigravityHandlerExecutionIsCanonical(
+        _ handler: [String: Any]
+    ) -> Bool {
+        guard Set(handler.keys) == Set(["type", "command", "timeout"]),
+              let rawTimeout = handler["timeout"],
+              CFGetTypeID(rawTimeout as CFTypeRef) != CFBooleanGetTypeID(),
+              let timeout = rawTimeout as? NSNumber,
+              !CFNumberIsFloatType(timeout),
+              timeout.doubleValue == 2 else { return false }
+        return true
+    }
+
+    // MARK: Paseo (`~/.paseo/config.json`)
+
+    private static func installingPaseo(
+        in originalData: Data?,
+        homeDirectory: URL
+    ) throws -> HookConfigurationEdit {
+        var root = try parseRoot(originalData)
+        let expectedPath = HookIntegrationPaths.paseoPluginDirectory(
+            homeDirectory: homeDirectory
+        ).path
+        let pluginID = HookIntegrationPaths.paseoPluginIdentifier
+
+        if let existingEnabled = root["pluginsEnabled"],
+           strictJSONBoolean(existingEnabled) == nil {
+            throw HookIntegrationError.conflictingStructure("pluginsEnabled")
+        }
+
+        var plugins = try validatedPaseoPlugins(
+            from: root,
+            expectedCodewakePath: expectedPath
+        )
+        let state = try inspectPaseoRoot(
+            root,
+            plugins: plugins,
+            expectedCodewakePath: expectedPath
+        )
+        if state == .installed, let originalData {
+            return HookConfigurationEdit(data: originalData, changed: false)
+        }
+
+        plugins[pluginID] = [
+            "enabled": true,
+            "path": expectedPath,
+            "source": "directory",
+        ]
+        root["plugins"] = plugins
+        root["pluginsEnabled"] = true
+        return HookConfigurationEdit(data: try encoded(root), changed: true)
+    }
+
+    private static func uninstallingPaseo(
+        from originalData: Data?,
+        homeDirectory: URL
+    ) throws -> HookConfigurationEdit {
+        guard let originalData else {
+            return HookConfigurationEdit(data: Data(), changed: false)
+        }
+        var root = try parseRoot(originalData)
+        let expectedPath = HookIntegrationPaths.paseoPluginDirectory(
+            homeDirectory: homeDirectory
+        ).path
+        let pluginID = HookIntegrationPaths.paseoPluginIdentifier
+
+        if let existingEnabled = root["pluginsEnabled"],
+           strictJSONBoolean(existingEnabled) == nil {
+            throw HookIntegrationError.conflictingStructure("pluginsEnabled")
+        }
+
+        var plugins = try validatedPaseoPlugins(
+            from: root,
+            expectedCodewakePath: expectedPath
+        )
+        guard plugins[pluginID] != nil else {
+            return HookConfigurationEdit(data: originalData, changed: false)
+        }
+
+        plugins.removeValue(forKey: pluginID)
+        if plugins.isEmpty {
+            root.removeValue(forKey: "plugins")
+            if Set(root.keys) == Set(["pluginsEnabled"]) {
+                root.removeValue(forKey: "pluginsEnabled")
+            }
+        } else {
+            root["plugins"] = plugins
+        }
+        return HookConfigurationEdit(data: try encoded(root), changed: true)
+    }
+
+    private static func paseoHealth(
+        of originalData: Data?,
+        homeDirectory: URL
+    ) -> HookIntegrationHealthState {
+        guard let originalData else { return .notInstalled }
+        do {
+            let root = try parseRoot(originalData)
+            let expectedPath = HookIntegrationPaths.paseoPluginDirectory(
+                homeDirectory: homeDirectory
+            ).path
+            let plugins = try validatedPaseoPlugins(
+                from: root,
+                expectedCodewakePath: expectedPath
+            )
+            return try inspectPaseoRoot(
+                root,
+                plugins: plugins,
+                expectedCodewakePath: expectedPath
+            )
+        } catch HookIntegrationError.invalidJSON, HookIntegrationError.invalidTopLevel {
+            return .invalidConfiguration
+        } catch {
+            return .conflict
+        }
+    }
+
+    private static func validatedPaseoPlugins(
+        from root: [String: Any],
+        expectedCodewakePath: String
+    ) throws -> [String: Any] {
+        guard let rawPlugins = root["plugins"] else { return [:] }
+        guard let plugins = rawPlugins as? [String: Any] else {
+            throw HookIntegrationError.conflictingStructure("plugins")
+        }
+        let pluginID = HookIntegrationPaths.paseoPluginIdentifier
+        let managedSuffix = "/\(HookIntegrationPaths.applicationSupportDirectoryName)/\(HookIntegrationPaths.paseoPluginDirectoryName)"
+
+        for (id, rawSource) in plugins {
+            guard let source = rawSource as? [String: Any] else {
+                throw HookIntegrationError.conflictingStructure("plugins.\(id)")
+            }
+            if id != pluginID {
+                if let path = source["path"] as? String,
+                   (path == expectedCodewakePath || path.hasSuffix(managedSuffix)) {
+                    throw HookIntegrationError.conflictingBridgeCommand(id)
+                }
+                continue
+            }
+            guard (source["source"] as? String) == "directory",
+                  let path = source["path"] as? String, !path.isEmpty else {
+                throw HookIntegrationError.conflictingStructure("plugins.\(pluginID)")
+            }
+            if let enabled = source["enabled"], strictJSONBoolean(enabled) == nil {
+                throw HookIntegrationError.conflictingStructure("plugins.\(pluginID).enabled")
+            }
+            guard path == expectedCodewakePath else {
+                throw HookIntegrationError.conflictingBridgeCommand(pluginID)
+            }
+        }
+        return plugins
+    }
+
+    private static func inspectPaseoRoot(
+        _ root: [String: Any],
+        plugins: [String: Any],
+        expectedCodewakePath: String
+    ) throws -> HookIntegrationHealthState {
+        let pluginID = HookIntegrationPaths.paseoPluginIdentifier
+        if let existingEnabled = root["pluginsEnabled"],
+           strictJSONBoolean(existingEnabled) == nil {
+            throw HookIntegrationError.conflictingStructure("pluginsEnabled")
+        }
+        guard let source = plugins[pluginID] as? [String: Any] else {
+            return .notInstalled
+        }
+        guard (source["source"] as? String) == "directory",
+              (source["path"] as? String) == expectedCodewakePath else {
+            throw HookIntegrationError.conflictingBridgeCommand(pluginID)
+        }
+        let sourceKeysCanonical = Set(source.keys) == Set(["source", "path", "enabled"])
+        let sourceEnabled = strictJSONBoolean(source["enabled"]) == true
+        let globallyEnabled = strictJSONBoolean(root["pluginsEnabled"]) == true
+        return (sourceKeysCanonical && sourceEnabled && globallyEnabled)
+            ? .installed
+            : .needsRepair
     }
 }
 

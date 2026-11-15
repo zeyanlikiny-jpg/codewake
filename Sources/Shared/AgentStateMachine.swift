@@ -8,6 +8,10 @@ public struct AgentStateMachine: Sendable {
     public static let defaultCompletionConfirmation: TimeInterval = 5
     public static let defaultWaitingGrace: TimeInterval = 5 * 60
     public static let defaultReleaseGrace: TimeInterval = defaultWaitingGrace
+    /// A Working turn silent for this long is treated as an interrupted turn
+    /// whose Stop hook never arrived. Long single tool calls (builds, test
+    /// suites) are well inside this; subagent work is exempt entirely.
+    public static let defaultWorkingIdleTimeout: TimeInterval = 45 * 60
     private static let tombstoneRetention: TimeInterval = 24 * 60 * 60
     private static let maximumTombstoneCount = 256
 
@@ -36,6 +40,8 @@ public struct AgentStateMachine: Sendable {
     private(set) public var maximumTurnDuration: TimeInterval
     private(set) public var completionConfirmation: TimeInterval
     private(set) public var waitingGrace: TimeInterval
+    /// See `expireIdleWorkingTurns(at:)`. Zero disables idle expiry.
+    public var workingIdleTimeout: TimeInterval = Self.defaultWorkingIdleTimeout
     private(set) public var lastIngestDisposition: AgentEventIngestDisposition = .accepted
 
     public init(maximumTurnDuration: TimeInterval = Self.defaultMaximumTurnDuration,
@@ -236,11 +242,22 @@ public struct AgentStateMachine: Sendable {
                 return finishIngest(.stale)
             }
             if let previousPrimary = primaryTurns[sessionKey], previousPrimary != turnKey,
-               let previous = turns[previousPrimary], !previous.backgroundWork {
+               let previous = turns[previousPrimary],
+               !previous.backgroundWork || previous.backgroundWorkTokens.isEmpty {
                 // A new user turn supersedes only the previous primary. Remove
                 // it behind a per-turn tombstone so delayed Stop/PostToolUse or
                 // notify delivery cannot resurrect a ghost task. Independently
                 // keyed auxiliary turns remain untouched.
+                //
+                // Token-less background work (Claude's `background_tasks` /
+                // `session_crons`, Antigravity's `fullyIdle:false`) is an
+                // absolute, session-wide count that only ever arrives on the
+                // *current* turn's Stop. Keeping the old turn would strand that
+                // count where nothing can decrement it, holding the wake until
+                // the hard limit. The new primary turn is Working and its own
+                // Stop re-reports whatever background work still exists.
+                // Tokenized work (Codex subagents) is still tracked per token
+                // and keeps its turn alive.
                 turns.removeValue(forKey: previousPrimary)
                 turnTombstones[previousPrimary] = Tombstone(timestamp: event.timestamp)
                 pruneTombstones(at: event.timestamp)
@@ -326,6 +343,17 @@ public struct AgentStateMachine: Sendable {
                 current.lastActivityAt = max(current.lastActivityAt ?? .distantPast,
                                              event.timestamp)
                 current.lastEventAt = event.timestamp
+            } else if current.phase == .waitingForInput,
+                      current.waitingObserved,
+                      current.waitingReason == .permission,
+                      !current.turnStopObserved {
+                // Claude/Codex emit no hook when a permission prompt is
+                // approved: the next lifecycle edge is the approved tool's own
+                // PostToolUse. Without this the turn stays "waiting" while the
+                // approved tool runs and its waiting deadline can request
+                // sleep mid-task. A tool finishing proves the prompt was
+                // answered and the agent is working again.
+                resumeWorking(&current, at: event.timestamp)
             } else {
                 disposition = .duplicate
             }
@@ -501,6 +529,86 @@ public struct AgentStateMachine: Sendable {
 
     public func state(for key: AgentTurnKey, at now: Date) -> AgentSessionState? {
         turns[key].map { effectiveCopy($0, at: now) }
+    }
+
+    /// Settled turns are retained this long after their terminal edge so late
+    /// duplicates still resolve against real state, then become tombstones.
+    public static let settledTurnRetention: TimeInterval = 6 * 60 * 60
+
+    /// Sessions that never send SessionEnd (Antigravity conversations, open
+    /// Paseo agents, idle-expired turns) otherwise accumulate finished turns
+    /// for the life of the app, and every 1 s tick sorts, snapshots and encodes
+    /// all of them. Drop turns that have been settled (not wake-eligible,
+    /// effectively finished/hard-expired) for `settledTurnRetention`, leaving a
+    /// per-turn tombstone exactly like `recoverySnapshot` would, so a very late
+    /// event for the same turn still cannot resurrect it.
+    @discardableResult
+    public mutating func pruneSettledTurns(at now: Date) -> Int {
+        guard isFinite(now) else { return 0 }
+        let cutoff = now.addingTimeInterval(-Self.settledTurnRetention)
+        var removed = 0
+        for (turnKey, state) in turns {
+            guard !state.isWakeEligible(at: now) else { continue }
+            if state.phase == .waitingForInput,
+               state.hardDeadline.map({ now < $0 }) == true { continue }
+            let terminalTimestamp: Date
+            switch state.effectivePhase(at: now) {
+            case .hardExpired: terminalTimestamp = state.hardDeadline ?? state.lastEventAt
+            case .finished: terminalTimestamp = state.graceDeadline ?? state.lastEventAt
+            default: continue
+            }
+            // A turn that finished normally later *reports* hardExpired once
+            // its hard deadline passes, so measure retention from whichever
+            // terminal edge came first.
+            let settledAt = min(
+                state.hardDeadline ?? .distantFuture,
+                max(state.lastEventAt, state.graceDeadline ?? state.lastEventAt)
+            )
+            guard settledAt < cutoff else { continue }
+            turns.removeValue(forKey: turnKey)
+            if terminalTimestamp >= (turnTombstones[turnKey]?.timestamp ?? .distantPast) {
+                turnTombstones[turnKey] = Tombstone(timestamp: terminalTimestamp)
+            }
+            removed += 1
+        }
+        if removed > 0 { pruneTombstones(at: now) }
+        return removed
+    }
+
+    /// Claude Code fires no Stop hook when the user interrupts a turn (Esc),
+    /// and a desktop session tab can close without SessionEnd. Such a turn
+    /// would otherwise stay Working until the multi-hour hard limit and keep
+    /// the Mac awake until the user pressed "Restore Normal Sleep".
+    ///
+    /// A foreground turn that has produced no lifecycle event for
+    /// `workingIdleTimeout` is ended as `.cancelled` (never sleep-eligible, so
+    /// this only releases the wake hold; it does not force sleep). Background
+    /// subagent work is exempt. The turn is not tombstoned: a later genuine
+    /// tool or prompt event for it resumes Working normally.
+    @discardableResult
+    public mutating func expireIdleWorkingTurns(at now: Date) -> Set<AgentTurnKey> {
+        guard workingIdleTimeout > 0, isFinite(now) else { return [] }
+        var expired = Set<AgentTurnKey>()
+        for (key, state) in turns {
+            guard state.phase == .working,
+                  state.effectivePhase(at: now) == .working,
+                  !state.backgroundWork,
+                  state.backgroundWorkCount == 0,
+                  state.backgroundWorkTokens.isEmpty,
+                  now.timeIntervalSince(state.lastEventAt) >= workingIdleTimeout
+            else { continue }
+            var ended = state
+            ended.phase = .finished
+            ended.graceDeadline = nil
+            ended.waitingObserved = false
+            ended.waitingReason = nil
+            ended.waitingStartedAt = nil
+            ended.stopHookActive = false
+            ended.terminalDisposition = .cancelled
+            turns[key] = ended
+            expired.insert(key)
+        }
+        return expired
     }
 
     public func activeTurns(at now: Date) -> Set<AgentTurnKey> {

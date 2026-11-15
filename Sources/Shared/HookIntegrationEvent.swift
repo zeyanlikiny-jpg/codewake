@@ -13,6 +13,7 @@ enum HookBridgeEventKind: String, Codable, Equatable {
     case waitingForInput
     case turnStopped
     case turnFailed
+    case turnCancelled
     case backgroundWorkChanged
     case sessionEnded
 }
@@ -101,9 +102,13 @@ enum HookEventSanitizer {
     // abuse bound without dropping ordinary large coding prompts.
     static let maximumInputBytes = 4 * 1024 * 1024
     private static let maximumIdentifierLength = 512
+    // `idle_prompt` is deliberately absent even though older installs still
+    // route it here: Claude sends it ~60 s after Stop, when the turn is already
+    // finished and simply waiting for the user's next prompt. Treating it as a
+    // wait re-opened the finished turn, re-took the wake for the full waiting
+    // delay and then requested sleep a second time.
     private static let waitingNotificationTypes: Set<String> = [
         "permission_prompt",
-        "idle_prompt",
         "elicitation_dialog",
         "elicitation_url_dialog",
         "agent_needs_input",
@@ -116,27 +121,313 @@ enum HookEventSanitizer {
     ) -> HookBridgePayload? {
         guard !data.isEmpty, data.count <= maximumInputBytes,
               let object = try? JSONSerialization.jsonObject(with: data),
-              let input = object as? [String: Any],
-              let sessionID = validIdentifier(input["session_id"] as? String),
-              let hookName = input["hook_event_name"] as? String,
-              provider.installedEvents.contains(hookName),
-              let mapping = mapping(hookName: hookName, input: input, provider: provider) else {
+              let input = object as? [String: Any] else {
             return nil
         }
 
-        let rawTurnID = (input["turn_id"] as? String) ?? (input["prompt_id"] as? String)
-        return HookBridgePayload(
-            provider: provider.wireName,
-            sessionID: sessionID,
-            turnID: validIdentifier(rawTurnID),
-            eventKind: mapping.kind,
-            waitingReason: waitingReason(hookName: hookName, input: input),
-            backgroundWork: mapping.backgroundWork,
-            backgroundWorkCount: mapping.backgroundWorkCount,
-            workToken: mapping.workToken,
-            stopHookActive: mapping.stopHookActive,
-            timestamp: timestamp
-        )
+        switch provider {
+        case .codex, .claudeCode:
+            guard let sessionID = validIdentifier(input["session_id"] as? String),
+                  let hookName = input["hook_event_name"] as? String,
+                  provider.installedEvents.contains(hookName),
+                  let mapping = mapping(hookName: hookName, input: input, provider: provider) else {
+                return nil
+            }
+            let rawTurnID = (input["turn_id"] as? String) ?? (input["prompt_id"] as? String)
+            return HookBridgePayload(
+                provider: provider.wireName,
+                sessionID: sessionID,
+                turnID: validIdentifier(rawTurnID),
+                eventKind: mapping.kind,
+                waitingReason: waitingReason(hookName: hookName, input: input),
+                backgroundWork: mapping.backgroundWork,
+                backgroundWorkCount: mapping.backgroundWorkCount,
+                workToken: mapping.workToken,
+                stopHookActive: mapping.stopHookActive,
+                timestamp: timestamp
+            )
+        case .antigravity:
+            return antigravityPayload(from: input, timestamp: timestamp)
+        case .paseo:
+            return paseoPayload(from: input, timestamp: timestamp)
+        }
+    }
+
+    private static func antigravityPayload(
+        from input: [String: Any],
+        timestamp: TimeInterval
+    ) -> HookBridgePayload? {
+        let rawSessionID = (input["conversationId"] as? String)
+            ?? (input["conversation_id"] as? String)
+            ?? (input["session_id"] as? String)
+        let rawHookName = (input["hookEventName"] as? String)
+            ?? (input["hook_event_name"] as? String)
+        guard let sessionID = validIdentifier(rawSessionID),
+              let hookName = rawHookName,
+              HookProvider.antigravity.acceptedEvents.contains(hookName) else {
+            return nil
+        }
+
+        let rawTurnID = (input["executionId"] as? String)
+            ?? (input["execution_id"] as? String)
+            ?? (input["turn_id"] as? String)
+        let turnID = hookName == "SessionStart" ? nil : validIdentifier(rawTurnID)
+        let toolCall = input["toolCall"] as? [String: Any]
+        let toolName = (toolCall?["name"] as? String) ?? (input["tool_name"] as? String)
+
+        switch hookName {
+        case "SessionStart":
+            return HookBridgePayload(
+                provider: HookProvider.antigravity.wireName,
+                sessionID: sessionID,
+                turnID: nil,
+                eventKind: .sessionStarted,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "PreInvocation":
+            return HookBridgePayload(
+                provider: HookProvider.antigravity.wireName,
+                sessionID: sessionID,
+                turnID: turnID,
+                eventKind: .promptSubmitted,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "PostInvocation":
+            return HookBridgePayload(
+                provider: HookProvider.antigravity.wireName,
+                sessionID: sessionID,
+                turnID: turnID,
+                eventKind: .activity,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "PreToolUse":
+            if let toolName, isInputRequestTool(toolName) {
+                return HookBridgePayload(
+                    provider: HookProvider.antigravity.wireName,
+                    sessionID: sessionID,
+                    turnID: turnID,
+                    eventKind: .waitingForInput,
+                    waitingReason: .userInput,
+                    backgroundWork: nil,
+                    timestamp: timestamp
+                )
+            }
+            return HookBridgePayload(
+                provider: HookProvider.antigravity.wireName,
+                sessionID: sessionID,
+                turnID: turnID,
+                eventKind: .toolStarted,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "PostToolUse":
+            if let toolName, isInputRequestTool(toolName) {
+                return HookBridgePayload(
+                    provider: HookProvider.antigravity.wireName,
+                    sessionID: sessionID,
+                    turnID: turnID,
+                    eventKind: .inputReceived,
+                    backgroundWork: nil,
+                    timestamp: timestamp
+                )
+            }
+            return HookBridgePayload(
+                provider: HookProvider.antigravity.wireName,
+                sessionID: sessionID,
+                turnID: turnID,
+                eventKind: .toolFinished,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "Stop":
+            let terminationReason = input["terminationReason"] as? String
+            let errorText = (input["error"] as? String)?
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            let continuationActive = input["continuationActive"] as? Bool
+
+            if terminationReason == "USER_CANCELED" {
+                if let turnID {
+                    return HookBridgePayload(
+                        provider: HookProvider.antigravity.wireName,
+                        sessionID: sessionID,
+                        turnID: turnID,
+                        eventKind: .turnCancelled,
+                        backgroundWork: false,
+                        backgroundWorkCount: 0,
+                        timestamp: timestamp
+                    )
+                }
+                return HookBridgePayload(
+                    provider: HookProvider.antigravity.wireName,
+                    sessionID: sessionID,
+                    turnID: nil,
+                    eventKind: .sessionEnded,
+                    backgroundWork: nil,
+                    timestamp: timestamp
+                )
+            }
+
+            if terminationReason == "ERROR" || (errorText != nil && !errorText!.isEmpty) {
+                return HookBridgePayload(
+                    provider: HookProvider.antigravity.wireName,
+                    sessionID: sessionID,
+                    turnID: turnID,
+                    eventKind: .turnFailed,
+                    backgroundWork: false,
+                    backgroundWorkCount: 0,
+                    stopHookActive: continuationActive,
+                    timestamp: timestamp
+                )
+            }
+
+            let fullyIdle = (input["fullyIdle"] as? Bool) ?? true
+            let backgroundWorkCount = fullyIdle ? 0 : 1
+            return HookBridgePayload(
+                provider: HookProvider.antigravity.wireName,
+                sessionID: sessionID,
+                turnID: turnID,
+                eventKind: .turnCompleted,
+                backgroundWork: !fullyIdle,
+                backgroundWorkCount: backgroundWorkCount,
+                stopHookActive: continuationActive,
+                timestamp: timestamp
+            )
+        default:
+            return nil
+        }
+    }
+
+    private static func paseoPayload(
+        from input: [String: Any],
+        timestamp bridgeTimestamp: TimeInterval
+    ) -> HookBridgePayload? {
+        let agent = input["agent"] as? [String: Any]
+        let rawSessionID = (input["session_id"] as? String)
+            ?? (input["agentId"] as? String)
+            ?? (agent?["id"] as? String)
+        let rawHookName = (input["hook_event_name"] as? String)
+            ?? (input["hookEventName"] as? String)
+        guard let sessionID = validIdentifier(rawSessionID),
+              let hookName = rawHookName,
+              HookProvider.paseo.installedEvents.contains(hookName) else {
+            return nil
+        }
+
+        let rawTurnID = (input["turn_id"] as? String) ?? (input["turnId"] as? String)
+        let turnID = validIdentifier(rawTurnID)
+        // The plugin stamps emission time because each hook is delivered by an
+        // independent bridge process. Trust it only near the bridge's clock so
+        // a local client cannot back- or forward-date events.
+        let timestamp: TimeInterval = {
+            guard let emitted = (input["emitted_at"] as? NSNumber)?.doubleValue,
+                  emitted.isFinite,
+                  abs(emitted - bridgeTimestamp) <= 5 * 60 else { return bridgeTimestamp }
+            return emitted
+        }()
+
+        switch hookName {
+        case "agent.create.after":
+            return HookBridgePayload(
+                provider: HookProvider.paseo.wireName,
+                sessionID: sessionID,
+                turnID: nil,
+                eventKind: .sessionStarted,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "agent.turn.before":
+            return HookBridgePayload(
+                provider: HookProvider.paseo.wireName,
+                sessionID: sessionID,
+                turnID: turnID,
+                eventKind: .promptSubmitted,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "agent.turn.after":
+            let outcome = input["outcome"] as? [String: Any]
+            let outcomeKind = (input["outcome_kind"] as? String)
+                ?? (input["outcome"] as? String)
+                ?? (outcome?["kind"] as? String)
+                ?? "completed"
+            switch outcomeKind {
+            case "completed":
+                return HookBridgePayload(
+                    provider: HookProvider.paseo.wireName,
+                    sessionID: sessionID,
+                    turnID: turnID,
+                    eventKind: .turnCompleted,
+                    backgroundWork: false,
+                    backgroundWorkCount: 0,
+                    timestamp: timestamp
+                )
+            case "failed":
+                return HookBridgePayload(
+                    provider: HookProvider.paseo.wireName,
+                    sessionID: sessionID,
+                    turnID: turnID,
+                    eventKind: .turnFailed,
+                    backgroundWork: false,
+                    backgroundWorkCount: 0,
+                    timestamp: timestamp
+                )
+            case "canceled", "cancelled":
+                if let turnID {
+                    return HookBridgePayload(
+                        provider: HookProvider.paseo.wireName,
+                        sessionID: sessionID,
+                        turnID: turnID,
+                        eventKind: .turnCancelled,
+                        backgroundWork: false,
+                        backgroundWorkCount: 0,
+                        timestamp: timestamp
+                    )
+                }
+                return HookBridgePayload(
+                    provider: HookProvider.paseo.wireName,
+                    sessionID: sessionID,
+                    turnID: nil,
+                    eventKind: .sessionEnded,
+                    backgroundWork: nil,
+                    timestamp: timestamp
+                )
+            default:
+                return nil
+            }
+        case "agent.permission.before":
+            return HookBridgePayload(
+                provider: HookProvider.paseo.wireName,
+                sessionID: sessionID,
+                turnID: turnID,
+                eventKind: .waitingForInput,
+                waitingReason: .permission,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "agent.permission.after":
+            return HookBridgePayload(
+                provider: HookProvider.paseo.wireName,
+                sessionID: sessionID,
+                turnID: turnID,
+                eventKind: .inputReceived,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        case "agent.close.after", "agent.archive.after":
+            return HookBridgePayload(
+                provider: HookProvider.paseo.wireName,
+                sessionID: sessionID,
+                turnID: nil,
+                eventKind: .sessionEnded,
+                backgroundWork: nil,
+                timestamp: timestamp
+            )
+        default:
+            return nil
+        }
     }
 
     private static func waitingReason(
@@ -148,8 +439,15 @@ enum HookEventSanitizer {
             guard let toolName = input["tool_name"] as? String,
                   isInputRequestTool(toolName) else { return nil }
             return .userInput
-        case "PermissionRequest", "Notification":
+        case "PermissionRequest":
             return .permission
+        case "Notification":
+            switch input["notification_type"] as? String {
+            case "permission_prompt": return .permission
+            case "elicitation_dialog", "elicitation_url_dialog", "agent_needs_input":
+                return .userInput
+            default: return .permission
+            }
         case "Stop":
             return (input["permission_mode"] as? String) == "plan"
                 || ProposedPlanEnvelope.matches(input["last_assistant_message"] as? String)
@@ -279,7 +577,7 @@ enum HookEventSanitizer {
 
     static func isInputRequestTool(_ rawName: String) -> Bool {
         switch normalizedToolName(rawName).lowercased() {
-        case "askuser", "askuserquestion", "request_user_input":
+        case "askuser", "askuserquestion", "request_user_input", "ask_question":
             return true
         default:
             return false
@@ -303,6 +601,40 @@ enum HookEventSanitizer {
         }
         return value
     }
+}
+
+/// Stdout written by the bridge for Antigravity hooks. Antigravity parses hook
+/// stdout as its `HookResult` JSON. For gate events (`PreToolUse`) the
+/// `decision` field is required; an empty object is read as an empty decision
+/// and hard-denies the tool call, which made every Antigravity tool fail while
+/// CodeWake was installed. CodeWake is an observer and must never tighten or
+/// loosen permissions, so a gate event gets `"ask"`: Antigravity's ordinary
+/// permission flow (it still honours the user's "Always Allow" choices) and
+/// never an auto-approval. Non-gate events keep the empty object, which leaves
+/// every default (stop/continue, injected steps) untouched.
+enum AntigravityHookResponse {
+    static let passiveObject = Data("{}\n".utf8)
+    static let deferToUserPermission = Data("{\"decision\":\"ask\"}\n".utf8)
+
+    /// `rawInput` is the hook's stdin exactly as received (nil when it could
+    /// not be read in time). When the event cannot be identified, assume it
+    /// may be a gate: `"ask"` is harmless for lifecycle events (any non-
+    /// "continue" Stop decision lets the agent stop), whereas `{}` on a gate
+    /// would block the tool.
+    static func stdout(forRawInput rawInput: Data?) -> Data {
+        guard let rawInput,
+              !rawInput.isEmpty,
+              rawInput.count <= HookEventSanitizer.maximumInputBytes,
+              let object = try? JSONSerialization.jsonObject(with: rawInput),
+              let input = object as? [String: Any],
+              let hookName = (input["hookEventName"] as? String)
+                ?? (input["hook_event_name"] as? String) else {
+            return deferToUserPermission
+        }
+        return gateEvents.contains(hookName) ? deferToUserPermission : passiveObject
+    }
+
+    private static let gateEvents: Set<String> = ["PreToolUse"]
 }
 
 /// Strict recognition for the Codex plan protocol. Incidental prose containing

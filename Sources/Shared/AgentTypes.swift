@@ -3,6 +3,8 @@ import Foundation
 public enum AgentProvider: String, Codable, CaseIterable, Hashable, Sendable {
     case codex
     case claudeCode = "claude"
+    case antigravity
+    case paseo
     /// Adapter placeholder only. Lidless AI does not install Cursor hooks in v1.
     case cursor
 
@@ -10,6 +12,8 @@ public enum AgentProvider: String, Codable, CaseIterable, Hashable, Sendable {
         switch self {
         case .codex: return "Codex"
         case .claudeCode: return "Claude Code"
+        case .antigravity: return "Antigravity"
+        case .paseo: return "Paseo"
         case .cursor: return "Cursor"
         }
     }

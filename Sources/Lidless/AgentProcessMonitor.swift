@@ -32,20 +32,30 @@ enum AgentExecutionSurface: String, Equatable, Sendable {
     /// app ships it as a separate versioned `claude.app` bundle under its
     /// Application Support directory, distinct from the Electron main binary.
     case claudeCodeDesktop
+    case paseo
+    case antigravity
 
     var provider: AgentProcessProvider {
         switch self {
         case .codexDesktop, .codexCLI: return .codex
         case .claudeCodeCLI, .claudeCodeDesktop: return .claude
+        case .paseo: return .paseo
+        case .antigravity: return .antigravity
         }
     }
 
-    /// A long-lived Codex Desktop app-server process, or an idle Claude desktop
-    /// Code-tab session, is presence evidence for a hook event, not evidence
-    /// that any task is active. Only standalone CLIs may create the
-    /// process-fallback's anonymous discovery session.
+    /// A long-lived Codex Desktop app-server process, idle Claude desktop
+    /// Code-tab session, Paseo daemon, or open Antigravity IDE window is
+    /// presence evidence for a hook event, not evidence that any task is
+    /// active. Only standalone CLIs may create the process-fallback's
+    /// anonymous discovery session.
     var supportsStandaloneDiscovery: Bool {
-        self != .codexDesktop && self != .claudeCodeDesktop
+        switch self {
+        case .codexCLI, .claudeCodeCLI:
+            return true
+        case .codexDesktop, .claudeCodeDesktop, .paseo, .antigravity:
+            return false
+        }
     }
 }
 
@@ -106,7 +116,7 @@ enum CodexProcessPresence: String, Equatable, Sendable {
                 desktopDetected = true
             case .codexCLI:
                 cliDetected = true
-            case .claudeCodeCLI, .claudeCodeDesktop:
+            case .claudeCodeCLI, .claudeCodeDesktop, .paseo, .antigravity:
                 continue
             }
         }
@@ -177,6 +187,8 @@ struct AgentProcessAssociationTracker {
 enum AgentProcessProvider: String, Equatable, Sendable {
     case codex
     case claude
+    case paseo
+    case antigravity
 
     static func detect(executableName: String) -> AgentProcessProvider? {
         let name = executableName.lowercased()
@@ -185,6 +197,17 @@ enum AgentProcessProvider: String, Equatable, Sendable {
             return .codex
         }
         if name == "claude" { return .claude }
+        if name == "paseo" || name == "paseo.bin"
+            || name == "paseo helper"
+            || name == "paseo daemon"
+            || name == "paseo supervisor" {
+            return .paseo
+        }
+        if name == "antigravity" || name == "agy"
+            || name == "language_server"
+            || name.hasPrefix("language_server_") {
+            return .antigravity
+        }
         return nil
     }
 
@@ -194,7 +217,10 @@ enum AgentProcessProvider: String, Equatable, Sendable {
         parentExecutablePath: String?
     ) -> AgentExecutionSurface? {
         guard let provider = detect(executableName: executableName) else { return nil }
+        let name = executableName.lowercased()
+        let loweredPath = executablePath.lowercased()
         let embeddedApp = containingAppBundle(executablePath)
+        let parentApp = parentExecutablePath.flatMap(containingAppBundle)
         switch provider {
         case .codex:
             // `command -v codex` may itself point into ChatGPT.app. That binary
@@ -202,7 +228,6 @@ enum AgentProcessProvider: String, Equatable, Sendable {
             // Desktop surface only when its parent belongs to the same outer app
             // bundle; this matches the Desktop app-server process tree without
             // retaining or transmitting either path.
-            let parentApp = parentExecutablePath.flatMap(containingAppBundle)
             return embeddedApp.map(isCodexDesktopBundle) == true
                 && embeddedApp == parentApp
                 ? .codexDesktop
@@ -214,6 +239,39 @@ enum AgentProcessProvider: String, Equatable, Sendable {
             // counts as the desktop surface.
             guard let embeddedApp else { return .claudeCodeCLI }
             return isClaudeDesktopCodeBundle(embeddedApp) ? .claudeCodeDesktop : nil
+        case .paseo:
+            if name == "paseo helper"
+                || name == "paseo daemon"
+                || name == "paseo supervisor" {
+                return embeddedApp.map(isPaseoBundle) == true ? .paseo : nil
+            }
+            if let embeddedApp {
+                return isPaseoBundle(embeddedApp) ? .paseo : nil
+            }
+            return .paseo
+        case .antigravity:
+            if name == "agy" {
+                if let embeddedApp {
+                    return isAntigravityBundle(embeddedApp) ? .antigravity : nil
+                }
+                return .antigravity
+            }
+            if name == "antigravity" {
+                guard embeddedApp.map(isAntigravityBundle) == true,
+                      !loweredPath.contains(".app/contents/frameworks/") else {
+                    return nil
+                }
+                return .antigravity
+            }
+            // `language_server` is a generic name shared by unrelated LSPs;
+            // accept it only inside Antigravity.app, launched by Antigravity.app,
+            // or under `~/.gemini/antigravity/`.
+            if embeddedApp.map(isAntigravityBundle) == true
+                || parentApp.map(isAntigravityBundle) == true
+                || loweredPath.contains("/.gemini/antigravity/") {
+                return .antigravity
+            }
+            return nil
         }
     }
 
@@ -233,6 +291,15 @@ enum AgentProcessProvider: String, Equatable, Sendable {
         URL(fileURLWithPath: path).lastPathComponent == "claude.app"
             && path.contains("/library/application support/claude/claude-code/")
     }
+
+    private static func isPaseoBundle(_ path: String) -> Bool {
+        URL(fileURLWithPath: path).lastPathComponent == "paseo.app"
+    }
+
+    private static func isAntigravityBundle(_ path: String) -> Bool {
+        let bundleName = URL(fileURLWithPath: path).lastPathComponent
+        return bundleName == "antigravity.app" || bundleName == "antigravity ide.app"
+    }
 }
 
 enum AgentProcessMonitor {
@@ -240,16 +307,30 @@ enum AgentProcessMonitor {
     /// adding PID/path data to the privacy-minimized socket payload.
     static func nearestAgentAncestor(of pid: pid_t, maximumDepth: Int = 12)
         -> AgentProcessSnapshot? {
+        agentAncestors(of: pid, maximumDepth: maximumDepth).first
+    }
+
+    /// Resolve the nearest agent ancestor plus contiguous same-provider parent
+    /// snapshots above it (for example Paseo's plugin worker and parent daemon).
+    static func agentAncestors(of pid: pid_t, maximumDepth: Int = 12)
+        -> [AgentProcessSnapshot] {
         var current = pid
         var visited: Set<pid_t> = []
+        var matches: [AgentProcessSnapshot] = []
         for _ in 0..<max(1, maximumDepth) {
             guard current > 1, visited.insert(current).inserted,
-                  let basic = basicInfo(pid: current) else { return nil }
-            if let agent = snapshot(pid: current, basic: basic) { return agent }
-            guard basic.parentPID != current else { return nil }
+                  let basic = basicInfo(pid: current) else { break }
+            if let agent = snapshot(pid: current, basic: basic) {
+                if let first = matches.first,
+                   agent.executionSurface.provider != first.executionSurface.provider {
+                    break
+                }
+                matches.append(agent)
+            }
+            guard basic.parentPID != current else { break }
             current = basic.parentPID
         }
-        return nil
+        return matches
     }
 
     /// Uses libproc instead of shelling out to `ps`, retaining PID start time so

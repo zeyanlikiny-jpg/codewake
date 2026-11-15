@@ -64,8 +64,48 @@ final class AgentIntegrationObservationTests: XCTestCase {
                 codexDesktop: true,
                 codexCLI: false,
                 claudeCode: true,
-                claudeDesktop: false
+                claudeDesktop: false,
+                paseo: false,
+                antigravity: false
             )
+        )
+    }
+
+    func testObservationsRoundTripPaseoAndAntigravityAndPreservePrePaseoRecords() {
+        let suite = "AgentIntegrationObservationPaseoAntigravityTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let store = SettingsStore(defaults: defaults)
+        let schema = HookBridgePayload.currentSchemaVersion
+
+        let prePaseo = #"{"bridgeSchemaVersion":\#(schema),"codexDesktop":true,"codexCLI":true,"claudeCode":false,"claudeDesktop":true}"#
+        defaults.set(Data(prePaseo.utf8), forKey: "agentIntegrationObservations")
+        XCTAssertEqual(
+            store.loadAgentIntegrationObservations(bridgeSchemaVersion: schema),
+            AgentIntegrationObservations(
+                bridgeSchemaVersion: schema,
+                codexDesktop: true,
+                codexCLI: true,
+                claudeCode: false,
+                claudeDesktop: true,
+                paseo: false,
+                antigravity: false
+            )
+        )
+
+        let full = AgentIntegrationObservations(
+            bridgeSchemaVersion: schema,
+            codexDesktop: true,
+            codexCLI: false,
+            claudeCode: true,
+            claudeDesktop: true,
+            paseo: true,
+            antigravity: true
+        )
+        store.saveAgentIntegrationObservations(full)
+        XCTAssertEqual(
+            store.loadAgentIntegrationObservations(bridgeSchemaVersion: schema),
+            full
         )
     }
 }
