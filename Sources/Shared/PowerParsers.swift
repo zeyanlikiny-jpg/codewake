@@ -1,21 +1,38 @@
 import Foundation
+import IOKit
 
-/// Pure parsing helpers for `pmset` output. Kept free of side effects so they
-/// can be unit-tested without touching real power management.
+/// Pure parsing helpers for `pmset` output, plus live `IOPMrootDomain` fallback.
 public enum PowerParsers {
 
     /// Parse `pmset -g` output for the `SleepDisabled` flag. The relevant line
     /// looks like: ` SleepDisabled        1`
     ///
-    /// Returns nil when the output doesn't actually state the flag — the key is
-    /// absent, or its value is something other than `0`/`1`. Truncated or
-    /// unexpected output must not read as "off": that's a claim the Mac is free
-    /// to sleep, made from data that says nothing of the sort.
+    /// On a fresh Mac where `pmset -a disablesleep` has never been invoked,
+    /// `com.apple.PowerManagement.plist` omits `SleepDisabled` entirely and
+    /// `pmset -g` prints an empty `System-wide power settings:` header followed
+    /// immediately by `Currently in use:` and the active profile keys. When both
+    /// section headers and active settings are present without a `SleepDisabled`
+    /// entry, sleep is not disabled (`false`).
+    ///
+    /// Returns nil when the output is empty, truncated, missing headers, or has
+    /// a malformed `SleepDisabled` value.
     public static func sleepDisabled(pmsetG output: String) -> Bool? {
-        for raw in output.split(separator: "\n") {
-            let line = String(raw).lowercased()
-            guard line.contains("sleepdisabled") else { continue }
-            let remainder = line
+        let lines = output.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        var systemHeaderIndex: Int?
+        var currentUseHeaderIndex: Int?
+
+        for (index, raw) in lines.enumerated() {
+            let trimmed = raw.trimmingCharacters(in: .whitespaces).lowercased()
+            if trimmed == "system-wide power settings:" {
+                systemHeaderIndex = index
+                continue
+            }
+            if trimmed == "currently in use:" {
+                currentUseHeaderIndex = index
+                continue
+            }
+            guard trimmed.contains("sleepdisabled") else { continue }
+            let remainder = trimmed
                 .replacingOccurrences(of: "sleepdisabled", with: "")
                 .trimmingCharacters(in: .whitespaces)
             switch remainder {
@@ -24,7 +41,36 @@ public enum PowerParsers {
             default:  return nil
             }
         }
+
+        if let sysIdx = systemHeaderIndex,
+           let curIdx = currentUseHeaderIndex,
+           curIdx > sysIdx {
+            let hasActiveEntries = lines[(curIdx + 1)...].contains {
+                !$0.trimmingCharacters(in: .whitespaces).isEmpty
+            }
+            if hasActiveEntries {
+                return false
+            }
+        }
         return nil
+    }
+
+    /// Read the live kernel `SleepDisabled` boolean directly from `IOPMrootDomain`.
+    /// Works without privileges even on fresh macOS installations where `pmset -g`
+    /// has never materialized `SleepDisabled` in `SystemPowerSettings`.
+    public static func sleepDisabledFromIORegistry() -> Bool? {
+        let rootDomain = IOServiceGetMatchingService(
+            kIOMainPortDefault,
+            IOServiceMatching("IOPMrootDomain")
+        )
+        guard rootDomain != IO_OBJECT_NULL else { return nil }
+        defer { IOObjectRelease(rootDomain) }
+        return IORegistryEntryCreateCFProperty(
+            rootDomain,
+            "SleepDisabled" as CFString,
+            kCFAllocatorDefault,
+            0
+        )?.takeRetainedValue() as? Bool
     }
 
     /// Lenient form, kept for callers that have no way to act on "unknown" —

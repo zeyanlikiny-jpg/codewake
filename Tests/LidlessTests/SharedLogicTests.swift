@@ -43,6 +43,21 @@ final class SharedLogicTests: XCTestCase {
         XCTAssertNil(PowerParsers.sleepDisabled(pmsetG: "Currently in use:\n standby 1"))
     }
 
+    func testStrictSleepDisabledReadsDefaultFalseOnFreshMacOutputWithoutSleepDisabledKey() {
+        let freshMacOutput = """
+        System-wide power settings:
+        Currently in use:
+         standby              1
+         Sleep On Power Button 1
+         hibernatefile        /var/vm/sleepimage
+         sleep                1 (sleep prevented by powerd, sharingd)
+         displaysleep         120
+        """
+        XCTAssertEqual(PowerParsers.sleepDisabled(pmsetG: freshMacOutput), false)
+        XCTAssertNil(PowerParsers.sleepDisabled(pmsetG: "System-wide power settings:\nCurrently in use:\n"))
+        XCTAssertNotNil(PowerParsers.sleepDisabledFromIORegistry())
+    }
+
     func testStrictSleepDisabledIsUnknownWhenValueIsMalformed() {
         XCTAssertNil(PowerParsers.sleepDisabled(pmsetG: " SleepDisabled        yes"))
         XCTAssertNil(PowerParsers.sleepDisabled(pmsetG: " SleepDisabled"))

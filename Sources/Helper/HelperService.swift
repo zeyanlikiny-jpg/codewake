@@ -714,8 +714,11 @@ final class HelperService: NSObject, LidlessHelperProtocol {
     // MARK: - System power adapter
 
     private static func readSleepDisabledFromSystem() -> Bool? {
-        guard let output = capture("/usr/bin/pmset", ["-g"]) else { return nil }
-        return PowerParsers.sleepDisabled(pmsetG: output)
+        if let output = capture("/usr/bin/pmset", ["-g"]),
+           let parsed = PowerParsers.sleepDisabled(pmsetG: output) {
+            return parsed
+        }
+        return PowerParsers.sleepDisabledFromIORegistry()
     }
 
     private static func writeSleepDisabledToSystem(_ disabled: Bool) -> PowerWriteResult {

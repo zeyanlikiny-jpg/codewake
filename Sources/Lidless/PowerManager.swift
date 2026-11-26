@@ -17,7 +17,10 @@ struct PowerManager {
     /// Reading needs no privileges, so this is the app's read path whether or not
     /// the helper is installed.
     func isSleepDisabled() -> Bool? {
-        guard let out = Shell.capture("/usr/bin/pmset", ["-g"]) else { return nil }
-        return PowerParsers.sleepDisabled(pmsetG: out)
+        if let out = Shell.capture("/usr/bin/pmset", ["-g"]),
+           let parsed = PowerParsers.sleepDisabled(pmsetG: out) {
+            return parsed
+        }
+        return PowerParsers.sleepDisabledFromIORegistry()
     }
 }

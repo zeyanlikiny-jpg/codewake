@@ -17,7 +17,7 @@ final class DisplayBlackoutCoreTests: XCTestCase {
         )
         XCTAssertNil(valid.validationFailure)
         XCTAssertEqual(valid.protocolVersion, 1)
-        XCTAssertEqual(valid.versionAdvertisement, "0.2.20+25;protocol=1")
+        XCTAssertEqual(valid.versionAdvertisement, "0.2.21+26;protocol=1")
 
         XCTAssertEqual(
             DisplayBlackoutRequest(
